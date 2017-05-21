@@ -1,0 +1,73 @@
+package malov.serg;
+
+import malov.serg.ad.AdvertisementManager;
+import malov.serg.ad.NoVideoAvailableException;
+import malov.serg.kitchen.Order;
+import malov.serg.kitchen.TestOrder;
+
+import java.io.IOException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Tablet {
+
+    private final int number;
+    private Logger logger =  Logger.getLogger(Tablet.class.getName());
+    private LinkedBlockingQueue<Order> queue = new LinkedBlockingQueue<>();
+
+    public void setQueue(LinkedBlockingQueue<Order> queue) {
+        this.queue = queue;
+    }
+
+    public Tablet(int number)
+    {
+        this.number = number;
+        setQueue(new Restaurant().getOrderQueue());
+    }
+    public void createOrder()
+    {
+        Order order = null;
+        try
+        {
+            order = new Order(this);
+            initOrder(order);
+        }
+        catch (IOException e) {
+            logger.log(Level.SEVERE, "Console is unavailable.");
+        }
+    }
+    public void createTestOrder()
+    {
+        Order order = null;
+        try
+        {
+            order = new TestOrder(this);
+            initOrder(order);
+        }
+        catch (IOException e) {
+            logger.log(Level.SEVERE, "Console is unavailable.");
+        }
+    }
+    private void initOrder(Order order)
+    {
+        if (!order.isEmpty()) {
+            ConsoleHelper.writeMessage(order.toString());
+            queue.add(order);
+        }
+        try
+        {
+            new AdvertisementManager(order.getTotalCookingTime() * 60).processVideos();
+        }catch (NoVideoAvailableException e) {
+            logger.log(Level.INFO, "No video is available for the order " + order);
+        }
+    }
+    public int getNumber()
+    {
+        return number;
+    }
+    @Override
+    public String toString() {
+        return "Tablet{number=" + number + "}";
+    }
+}
