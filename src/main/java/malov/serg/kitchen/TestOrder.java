@@ -5,6 +5,7 @@ import malov.serg.Tablet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TestOrder extends Order {
 
@@ -16,12 +17,14 @@ public class TestOrder extends Order {
     protected void initDishes() throws IOException {
         dishes = new ArrayList<Dish>();
         int dishLength = Dish.values().length;
-        int randomLength = (int) (Math.random() * dishLength) + 1;
+        int randomLength = (ThreadLocalRandom.current().nextInt(dishLength)) + 1;
         for (int i = 0; i < randomLength; i++) {
-            double random = Math.random() * dishLength;
+            double random = ThreadLocalRandom.current().nextInt(dishLength);
             dishes.add(Dish.values()[(int) random]);
         }
 
 
     }
+
+
 }

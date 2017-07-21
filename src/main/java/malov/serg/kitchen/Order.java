@@ -2,15 +2,24 @@ package malov.serg.kitchen;
 
 
 
+import lombok.NoArgsConstructor;
 import malov.serg.ConsoleHelper;
 import malov.serg.Tablet;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.IOException;
 import java.util.List;
 
-
+/*@Entity
+@Table(name="Order")
+@NoArgsConstructor*/
 public class Order {
 
+
+    private long id;
     protected List<Dish> dishes;
     private Tablet tablet;
     public List<Dish> getDishes()
@@ -48,7 +57,11 @@ public class Order {
     @Override
     public String toString()
     {
-        return dishes.isEmpty() ? "" : String.format("Your order: %s of        Tablet{number=%d}",dishes,tablet.getNumber());
+        return dishes.isEmpty() ? "" : String.format("Your order: %s of Tablet{number=%d}",dishes,tablet.getNumber());
+    }
+
+    public long getId() {
+        return id;
     }
 }
 

@@ -1,17 +1,27 @@
 package malov.serg;
 
+import lombok.NoArgsConstructor;
 import malov.serg.ad.AdvertisementManager;
 import malov.serg.ad.NoVideoAvailableException;
 import malov.serg.kitchen.Order;
 import malov.serg.kitchen.TestOrder;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/*@Entity
+@Table(name="Tablet")*/
 public class Tablet {
 
+   /* @Id
+    @GeneratedValue*/
+    private long id;
     private final int number;
     private Logger logger =  Logger.getLogger(Tablet.class.getName());
     private LinkedBlockingQueue<Order> queue = new LinkedBlockingQueue<>();
@@ -23,8 +33,9 @@ public class Tablet {
     public Tablet(int number)
     {
         this.number = number;
-        setQueue(new Restaurant().getOrderQueue());
+        setQueue(new Application().getOrderQueue());
     }
+
     public void createOrder()
     {
         Order order = null;
@@ -60,7 +71,7 @@ public class Tablet {
             new AdvertisementManager(order.getTotalCookingTime() * 60).processVideos();
         }catch (NoVideoAvailableException e) {
             logger.log(Level.INFO, "No video is available for the order " + order);
-        }
+        }//NoAvailableVideoEventDataRow
     }
     public int getNumber()
     {
@@ -70,4 +81,14 @@ public class Tablet {
     public String toString() {
         return "Tablet{number=" + number + "}";
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }
+
+

@@ -3,32 +3,71 @@ package malov.serg.kitchen;
 
 
 
+
+import lombok.NoArgsConstructor;
+import malov.serg.Application;
 import malov.serg.ConsoleHelper;
 import malov.serg.statistic.StatisticManager;
 import malov.serg.statistic.event.CookedOrderEventDataRow;
 
-import java.util.Observable;
+import javax.persistence.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class Cook extends Observable implements Runnable {
+@Entity
+@Table(name="cook")
+@NoArgsConstructor
+
+public class Cook implements Runnable {
+
+    @Id
+    @GeneratedValue
+    private long id;
 
     private String name;
     private boolean busy;
-    private LinkedBlockingQueue<Order> queue = new LinkedBlockingQueue<>();
+    //@OneToMany(mappedBy="cook", cascade=CascadeType.ALL)
+    private LinkedBlockingQueue<Order> queueOrders = new LinkedBlockingQueue<>();
 
-    public void setQueue(LinkedBlockingQueue<Order> queue) {
-        this.queue = queue;
+    private LinkedBlockingQueue<Order> cookedOrders = new LinkedBlockingQueue<>();
+
+    public void setCookedOrders(LinkedBlockingQueue<Order> cookedOrders) {
+        this.cookedOrders = cookedOrders;
+    }
+
+    public void setQueueOrders(LinkedBlockingQueue<Order> queueOrders) {
+        this.queueOrders = queueOrders;
     }
 
     public Cook(String name) {
 
         this.name = name;
+        setCookedOrders(new Application().getCookedOrders());
 
     }
 
     public boolean isBusy() {
         return busy;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public LinkedBlockingQueue<Order> getQueueOrders() {
+        return queueOrders;
+    }
+
+    public LinkedBlockingQueue<Order> getCookedOrders() {
+        return cookedOrders;
     }
 
     public void startCookingOrder(Order order){
@@ -38,8 +77,8 @@ public class Cook extends Observable implements Runnable {
                 order.getDishes()));
         ConsoleHelper.writeMessage("Start cooking - " +  order + ", cooking time " + order.getTotalCookingTime() + "min" );
 
-        setChanged();
-        notifyObservers(order);
+        cookedOrders.add(order);
+
         try {
             Thread.sleep(10 * order.getTotalCookingTime());
         } catch (InterruptedException e) {
@@ -57,10 +96,10 @@ public class Cook extends Observable implements Runnable {
     public void run() {
         while(true){
             try{
-                if(!queue.isEmpty()){
+                if(!queueOrders.isEmpty()){
 
                         if(!this.isBusy()){
-                            Order order = queue.poll();
+                            Order order = queueOrders.poll();
                             if(order != null)
                             {
                                 startCookingOrder(order);

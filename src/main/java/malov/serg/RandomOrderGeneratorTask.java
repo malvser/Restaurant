@@ -2,6 +2,7 @@ package malov.serg;
 
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomOrderGeneratorTask implements Runnable {
 
@@ -19,7 +20,8 @@ public class RandomOrderGeneratorTask implements Runnable {
         {
             try
             {
-                int random = (int)(Math.random() * tablets.size());
+                //int random = (int)(Math.random() * tablets.size());
+                int random = (ThreadLocalRandom.current().nextInt(tablets.size()));
                 Tablet tablet = tablets.get(random);
                 tablet.createTestOrder();
                 Thread.sleep(interval);
