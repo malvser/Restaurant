@@ -2,19 +2,23 @@ $(document).ready(function(){
 	
 	$('#buttons-hbox').click(function(){
 		
-		var elem = $(this).closest('.item');
-		
+		<!-- var elem = $(this).closest('.form-control'); -->
+
 		$.confirm({
 			'title'		: 'Подтверждение заказа',
-			'message'	: 'You are about to delete this item. <br />It cannot be restored at a later time! Continue?',
+			'message'	: 'Подтверждаете заказ с выбранными Вами блюдами?',
 			'buttons'	: {
-				'Yes'	: {
+				'Да'	: {
 					'class'	: 'blue',
 					'action': function(){
-						elem.slideUp();
+                        $.each('.form-control', function(){
+
+                        });
+
+
 					}
 				},
-				'No'	: {
+				'Нет'	: {
 					'class'	: 'gray',
 					'action': function(){}	// Nothing to do in this case. You can as well omit the action property.
 				}

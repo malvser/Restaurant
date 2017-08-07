@@ -15,7 +15,7 @@
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" />
+   <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
     <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css" />
 
     <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
@@ -24,7 +24,7 @@
     <link href="resources/style.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
 
 </head>
 <body>
@@ -36,13 +36,13 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">×</span></button>
-                <div class="modal-title">Photo</div>
+                <div class="modal-lg">Photo</div>
             </div>
             <div class="modal-body">
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -58,21 +58,23 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a id="add_contact" class="navbar-brand">MENU</a>
+            <a id="add_contact" class="navbar-brand" href="/menu">Сброс поиска</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">Home</a></li>
-                <li><a href="/add_dish">Add dish</a></li>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/add_dish">Добавить блюдо</a></li>
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Help</a></li>
             </ul>
             <form class="navbar-form navbar-right" role="search" action="/search" method="post">
                 <div class="form-group">
-                    <input type="text" class="form-control" name="pattern" placeholder="Search">
+                    <input type="text" class="form-control" name="pattern" placeholder="Поиск">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+
             </form>
+
         </div>
     </div>
 </nav>
@@ -119,7 +121,7 @@
 
                     </tr>
                     </thead>
-                    <form enctype="multipart/form-data" action="/order" method="post">
+                    <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
                         <c:forEach var="item" items="${dishes}">
                             <tr>
                                 <td><input type="checkbox" align="center" name="check" value="${item.getId()}"/>
@@ -169,7 +171,7 @@
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
 <script src="resources/js/photo.js"></script>
-<script></script>
+
 
 
 </body>
