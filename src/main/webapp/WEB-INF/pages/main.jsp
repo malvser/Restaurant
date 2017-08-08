@@ -15,8 +15,8 @@
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-   <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
-    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
+    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
     <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -58,11 +58,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a id="add_contact" class="navbar-brand" href="/menu">Сброс поиска</a>
+            <a id="add_contact" class="navbar-brand" href="/">Главная</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">Главная</a></li>
+                <li><a href="/menu">Сброс поиска</a></li>
                 <li><a href="/add_dish">Добавить блюдо</a></li>
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Help</a></li>
@@ -85,7 +85,7 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                <li><a href="/order">Order</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="#">Analytics</a></li>
                 <li><a href="#">Export</a></li>
             </ul>
@@ -101,49 +101,50 @@
 
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <!--  <form action="/order"  method="post"> -->
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th width="10%" align="right">
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <div class="btn-group" role="group">
-                                    <input type="submit" id="buttons-hbox" class="btn btn-success" value="Order">
-                                </div>
-                            </div>
-                        </th>
-                        <td width="20%"><h3>Name</h3></td>
-                        <td width="20%"><h3>Weight</h3></td>
-                        <td width="40%"><h3>Cost</h3></td>
-                        <td width="30%"><h3>Discount</h3></td>
-                        <td width="30%"><h3>Photo</h3></td>
-
-                    </tr>
-                    </thead>
-                    <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
-                        <c:forEach var="item" items="${dishes}">
-                            <tr>
-                                <td><input type="checkbox" align="center" name="check" value="${item.getId()}"/>
-                                </td>
-                                <td><c:out value="${item.getName()}"/>
-                                <td><c:out value="${item.getWeight()}"/>
-                                <td><c:out value="${item.getCost()}"/>
-                                <td><c:out value="${item.getDiscount()}"/>
-                                <td>
-                                    <div id="aaa"
-                                         style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
-                                        <a href="#" class="thumbnail" style="">
-                                            <img width="60" height="60" src="/photo/${item.getId()}"/>
-                                        </a>
+            <form action="/order" method="post">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th width="10%" align="right">
+                                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                                    <div class="btn-group" role="group">
+                                        <input type="submit" id="buttons-hbox" class="btn btn-success" value="Order">
                                     </div>
-                                </td>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </form>
-                </table>
-            </div>
+                                </div>
+                            </th>
+                            <td width="20%"><h3>Name</h3></td>
+                            <td width="20%"><h3>Weight</h3></td>
+                            <td width="40%"><h3>Cost</h3></td>
+                            <td width="30%"><h3>Discount</h3></td>
+                            <td width="30%"><h3>Photo</h3></td>
+
+                        </tr>
+                        </thead>
+                        <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
+                            <c:forEach var="item" items="${dishes}">
+                                <tr>
+                                    <td><input type="checkbox" align="center" name="id" value="${item.id}"/>
+                                    </td>
+                                    <td><c:out value="${item.name}"/>
+                                    <td><c:out value="${item.weight}"/>
+                                    <td><c:out value="${item.cost}"/>
+                                    <td><c:out value="${item.discount}"/>
+                                    <td>
+                                        <div id="aaa"
+                                             style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
+                                            <a href="#" class="thumbnail" style="">
+                                                <img width="60" height="60" src="/photo/${item.id}"/>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </form>
+                    </table>
+                </div>
+            </form>
 
             <nav aria-label="Page navigation">
                 <ul class="pagination">
@@ -155,7 +156,7 @@
                 </ul>
             </nav>
 
-            <input type="submit" value="Make order"/>
+
             </form>
             <!-- <input type="submit" value="Back to mainpage" onclick="window.location='/';"/> -->
 
@@ -171,7 +172,6 @@
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
 <script src="resources/js/photo.js"></script>
-
 
 
 </body>
