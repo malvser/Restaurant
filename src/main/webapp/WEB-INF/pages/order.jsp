@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -13,7 +12,7 @@
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css" />
+    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
     <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -94,49 +93,70 @@
         </div>
 
 
-        <h2 align="center">Выбранные Вами блюда</h2>
+        <h2 align="center">Заказанные Вами блюда</h2>
 
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <!--  <form action="/order"  method="post"> -->
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
+            <form action="/delete_choose" method="post">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th> <b>Все</b> <input type="checkbox" id="alls" /> </th>
+                            <th width="20%"><h3>Name</h3></th>
+                            <th width="20%"><h3>Weight</h3></th>
+                            <th width="40%"><h3>Cost</h3></th>
+                            <th width="30%"><h3>Discount</h3></th>
+                            <th width="30%"><h3>Photo</h3></th>
 
-                        <th width="20%"><h3>Name</h3></th>
-                        <th width="20%"><h3>Weight</h3></th>
-                        <th width="40%"><h3>Cost</h3></th>
-                        <th width="30%"><h3>Discount</h3></th>
-                        <th width="30%"><h3>Photo</h3></th>
+
+                        </tr>
+                        </thead>
+                        <form class="form-control" enctype="multipart/form-data" method="post">
+
+                            <c:forEach var="item" items="${dishesArrayId}">
 
 
-                    </tr>
-                    </thead>
-                    <form class="form-control" enctype="multipart/form-data" action="/" method="post">
-                        <c:forEach var="item" items="${dishesArrayId}">
-                            <tr>
+                                    <td><input type="checkbox" align="center" name="idw" value="${item.id}"/>
+                                    </td>
+                                    <td><c:out value="${item.name}"/>
+                                    <td><c:out value="${item.weight}"/>
+                                    <td><c:out value="${item.cost}"/>
+                                    <td><c:out value="${item.discount}"/>
+                                    <td>
+                                        <div id="aaa"
+                                             style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
+                                            <a href="#" class="thumbnail" style="">
+                                                <img width="60" height="60" name="id_list" src="/photo/${item.id}"/>
+                                            </a>
+                                        </div>
+                                    </td>
 
-                                <td><c:out value="${item.name}"/>
-                                <td><c:out value="${item.weight}"/>
-                                <td><c:out value="${item.cost}"/>
-                                <td><c:out value="${item.discount}"/>
-                                <td>
-                                    <div id="aaa"
-                                         style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
-                                        <a href="#" class="thumbnail" style="">
-                                            <img width="60" height="60" src="/photo/${item.id}"/>
-                                        </a>
-                                    </div>
-                                </td>
+                                    </td>
 
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </form>
-                </table>
-            </div>
 
+                                </tr>
+
+                            </c:forEach>
+
+                        </form>
+                    </table>
+                </div>
+            </form>
+            <form action="/give_order" method="post">
+
+                <div class="btn-group" role="group">
+                    <input type="submit" id="buttons-hbox" class="btn btn-success" value="Подтвердить заказ">
+                </div>
+
+            </form>
+            <form action="/menu" method="post">
+
+                <div class="btn-group" role="group">
+                    <input type="submit" id="buttons-hbox2" class="btn btn-info" value="Отменить заказ">
+                </div>
+
+            </form>
             <nav aria-label="Page navigation">
                 <ul class="pagination">
                     <c:if test="${allPages ne null}">
@@ -162,7 +182,7 @@
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
 <script src="resources/js/photo.js"></script>
-
+<script src="resources/js/checkboxAll.js"></script>
 
 
 </body>
