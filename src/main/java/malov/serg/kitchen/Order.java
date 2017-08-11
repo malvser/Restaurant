@@ -6,22 +6,25 @@ import lombok.NoArgsConstructor;
 import malov.serg.ConsoleHelper;
 import malov.serg.Tablet;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.IOException;
 import java.util.List;
 
-/*@Entity
-@Table(name="Order")
-@NoArgsConstructor*/
+@Entity
+@Table(name="orders")
+@NoArgsConstructor
 public class Order {
 
-
+    @Id
+    @GeneratedValue
     private long id;
-    protected List<Dish> dishes;
+    @OneToMany(mappedBy="order", cascade=CascadeType.ALL)
+    private List<Dish> dishes;
+    @OneToOne
+    @JoinColumn(name="tablet_id")
     private Tablet tablet;
+
+
     public List<Dish> getDishes()
     {
         return dishes;
@@ -29,8 +32,8 @@ public class Order {
     public Order(Tablet tablet) throws IOException
     {
         this.tablet = tablet;
-        ConsoleHelper.writeMessage(Dish.allDishesToString());
-        initDishes();
+        //ConsoleHelper.writeMessage(Dish.allDishesToString());
+        //initDishes();
     }
     public int getTotalCookingTime()
     {

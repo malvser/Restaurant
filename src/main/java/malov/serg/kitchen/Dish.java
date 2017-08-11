@@ -8,19 +8,85 @@ import java.util.Arrays;
 @Entity
 @Table(name="dish")
 @NoArgsConstructor
-public enum Dish {
+public class Dish {
 
-    @Column(name="name")
-    Fish(25), Steak(30), Soup(15), Juice(5), Water(3);
-
-    //private String name;
+    //Fish(25), Steak(30), Soup(15), Juice(5), Water(3);
     @Id
     @GeneratedValue
     private long id;
+    @Column(name = ("photo"), length = 16777215)
+    private byte[] photo;
+    @ManyToOne
+    @JoinColumn(name="order_id")
+    private Order order;
+    private String name;
+    private int cost;
+    private int weight;
+
+    private int discount;
     private int duration;
 
-    Dish(int duration) {
+
+    public String getName() {
+        return name;
+    }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    public Dish(String name, int cost, int weight, int discount) {
+        this.name = name;
+        this.cost = cost;
+        this.weight = weight;
+        this.discount = discount;
+
+    }
+
+    public Dish(String name, int cost, int weight, byte[] photo) {
+        this.name = name;
+        this.cost = cost;
+        this.weight = weight;
+        this.photo = photo;
+    }
+
+    public Dish(byte[] photo, String name, int cost, int weight, int discount, int duration) {
+        this.photo = photo;
+        this.name = name;
+        this.cost = cost;
+        this.weight = weight;
+        this.discount = discount;
         this.duration = duration;
+    }
+
+    public Dish(String name, int cost, int weight, int duration, int discount) {
+        this.name = name;
+        this.cost = cost;
+        this.weight = weight;
+        this.discount = discount;
+        this.duration = duration;
+    }
+
+
+
+    public Dish(String name) {
+        this.name = name;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public int getDiscount() {
+        return discount;
     }
 
     public int getDuration() {
@@ -35,17 +101,5 @@ public enum Dish {
         this.id = id;
     }
 
-    public static String allDishesToString(){
-        StringBuilder sb = new StringBuilder(Arrays.toString(Dish.values()));
 
-
-
-        sb.delete(0, 1);
-        sb.delete(sb.length() - 1, sb.length());
-        return sb.toString();
-    }
-
-   /* public int getDuration() {
-        return duration;
-    }*/
 }

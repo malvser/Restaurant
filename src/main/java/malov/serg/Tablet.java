@@ -4,26 +4,26 @@ import lombok.NoArgsConstructor;
 import malov.serg.ad.AdvertisementManager;
 import malov.serg.ad.NoVideoAvailableException;
 import malov.serg.kitchen.Order;
-import malov.serg.kitchen.TestOrder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+
+import javax.persistence.*;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*@Entity
-@Table(name="Tablet")*/
+@Entity
+@Table(name="tablets")
 public class Tablet {
 
-   /* @Id
-    @GeneratedValue*/
+    @Id
+    @GeneratedValue
     private long id;
     private final int number;
-    private Logger logger =  Logger.getLogger(Tablet.class.getName());
+
+
+    //private Logger logger =  Logger.getLogger(Tablet.class.getName());
     private LinkedBlockingQueue<Order> queue = new LinkedBlockingQueue<>();
 
     public void setQueue(LinkedBlockingQueue<Order> queue) {
@@ -36,6 +36,8 @@ public class Tablet {
         setQueue(new Application().getOrderQueue());
     }
 
+
+
     public void createOrder()
     {
         Order order = null;
@@ -45,7 +47,7 @@ public class Tablet {
             initOrder(order);
         }
         catch (IOException e) {
-            logger.log(Level.SEVERE, "Console is unavailable.");
+          //  logger.log(Level.SEVERE, "Console is unavailable.");
         }
     }
     public void createTestOrder()
@@ -53,24 +55,24 @@ public class Tablet {
         Order order = null;
         try
         {
-            order = new TestOrder(this);
+            order = new Order(this);
             initOrder(order);
         }
         catch (IOException e) {
-            logger.log(Level.SEVERE, "Console is unavailable.");
+          //  logger.log(Level.SEVERE, "Console is unavailable.");
         }
     }
     private void initOrder(Order order)
     {
         if (!order.isEmpty()) {
-            ConsoleHelper.writeMessage(order.toString());
+           // ConsoleHelper.writeMessage(order.toString());
             queue.add(order);
         }
         try
         {
             new AdvertisementManager(order.getTotalCookingTime() * 60).processVideos();
         }catch (NoVideoAvailableException e) {
-            logger.log(Level.INFO, "No video is available for the order " + order);
+           // logger.log(Level.INFO, "No video is available for the order " + order);
         }//NoAvailableVideoEventDataRow
     }
     public int getNumber()
