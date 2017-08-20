@@ -1,7 +1,4 @@
-package malov.serg.kitchen;
-
-
-
+package malov.serg.Model;
 
 
 import lombok.NoArgsConstructor;
@@ -15,10 +12,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 
 @Entity
-@Table(name="cook")
+@Table(name = "cook")
 @NoArgsConstructor
 
-public class Cook implements Runnable {
+public class Cook {
 
     @Id
     @GeneratedValue
@@ -26,7 +23,7 @@ public class Cook implements Runnable {
 
     private String name;
     private boolean busy;
-    //@OneToMany(mappedBy="cook", cascade=CascadeType.ALL)
+
     private LinkedBlockingQueue<Order> queueOrders = new LinkedBlockingQueue<>();
 
     private LinkedBlockingQueue<Order> cookedOrders = new LinkedBlockingQueue<>();
@@ -42,7 +39,7 @@ public class Cook implements Runnable {
     public Cook(String name) {
 
         this.name = name;
-        setCookedOrders(new Application().getCookedOrders());
+        setQueueOrders(new Application().getOrderQueue());
 
     }
 
@@ -70,12 +67,12 @@ public class Cook implements Runnable {
         return cookedOrders;
     }
 
-    public void startCookingOrder(Order order){
+    public void startCookingOrder(Order order) {
         busy = true;
 
-        StatisticManager.getInstance().register(new CookedOrderEventDataRow(order.getTablet().toString(),name,order.getTotalCookingTime() * 60,
+        StatisticManager.getInstance().register(new CookedOrderEventDataRow(order.getTablet().toString(), name, order.getTotalCookingTime() * 60,
                 order.getDishes()));
-        ConsoleHelper.writeMessage("Start cooking - " +  order + ", cooking time " + order.getTotalCookingTime() + "min" );
+        ConsoleHelper.writeMessage("Start cooking - " + order + ", cooking time " + order.getTotalCookingTime() + "min");
 
         cookedOrders.add(order);
 
@@ -92,7 +89,7 @@ public class Cook implements Runnable {
         return name;
     }
 
-    @Override
+   /* @Override
     public void run() {
         while(true){
             try{
@@ -114,5 +111,5 @@ public class Cook implements Runnable {
                 break;
             }
         }
-    }
+    }*/
 }
