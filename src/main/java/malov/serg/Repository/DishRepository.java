@@ -1,7 +1,7 @@
-package malov.serg;
+package malov.serg.Repository;
 
 
-import malov.serg.kitchen.Dish;
+import malov.serg.Model.Dish;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

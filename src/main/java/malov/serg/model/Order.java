@@ -1,10 +1,9 @@
-package malov.serg.kitchen;
+package malov.serg.Model;
 
 
 
 import lombok.NoArgsConstructor;
 import malov.serg.ConsoleHelper;
-import malov.serg.Tablet;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -29,12 +28,15 @@ public class Order {
     {
         return dishes;
     }
-    public Order(Tablet tablet) throws IOException
+    public Order(Tablet tablet, List<Dish> dishes) throws IOException
     {
         this.tablet = tablet;
+        this.dishes = dishes;
         //ConsoleHelper.writeMessage(Dish.allDishesToString());
         //initDishes();
     }
+
+
     public int getTotalCookingTime()
     {
         int sum = 0;

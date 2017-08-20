@@ -57,7 +57,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/menu">Сброс поиска</a></li>
+                <li><a href="/order">Сброс поиска</a></li>
                 <li><a href="/add_dish">Добавить блюдо</a></li>
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Help</a></li>
@@ -93,8 +93,8 @@
         </div>
 
 
-        <h2 align="center">Заказанные Вами блюда</h2>
-
+        <h3 align="center">Подтвердите заказ выбрав все заказанные Вами блюда</h3>
+        <h3 align="center">или часть их и нажмите кнопку "Подтвердить заказ" </h3>
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <form action="/delete_choose" method="post">
@@ -117,7 +117,7 @@
                             <c:forEach var="item" items="${dishesArrayId}">
 
 
-                                    <td><input type="checkbox" align="center" name="idw" value="${item.id}"/>
+                                    <td><input type="checkbox" align="center" name="id" value="${item.id}"/>
                                     </td>
                                     <td><c:out value="${item.name}"/>
                                     <td><c:out value="${item.weight}"/>
@@ -143,7 +143,7 @@
                     </table>
                 </div>
             </form>
-            <form action="/give_order" method="post">
+            <form action="/advertisement/view" >
 
                 <div class="btn-group" role="group">
                     <input type="submit" id="buttons-hbox" class="btn btn-success" value="Подтвердить заказ">

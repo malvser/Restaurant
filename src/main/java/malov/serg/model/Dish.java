@@ -1,9 +1,8 @@
-package malov.serg.kitchen;
+package malov.serg.Model;
 
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Arrays;
 
 @Entity
 @Table(name="dish")
@@ -22,7 +21,6 @@ public class Dish {
     private String name;
     private int cost;
     private int weight;
-
     private int discount;
     private int duration;
 

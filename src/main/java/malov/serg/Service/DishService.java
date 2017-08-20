@@ -1,6 +1,7 @@
-package malov.serg;
+package malov.serg.Service;
 
-import malov.serg.kitchen.Dish;
+import malov.serg.Model.Dish;
+import malov.serg.Repository.DishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Pageable;
