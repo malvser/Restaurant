@@ -1,16 +1,9 @@
 package malov.serg;
 
-import malov.serg.kitchen.Cook;
-import malov.serg.kitchen.Order;
-import malov.serg.kitchen.Waiter;
-import org.springframework.boot.CommandLineRunner;
+import malov.serg.Model.Order;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @SpringBootApplication
@@ -31,15 +24,33 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
-    public CommandLineRunner demo(/*final ContactService contactService*/) {
+   /* @Bean
+    public CommandLineRunner demo(final DishService dishService) {
         return new CommandLineRunner() {
             @Override
             public void run(String... strings) throws Exception {
 
+            Dish dish;
 
+                for (int i = 0; i < 3; i++){
+                    dish = new Dish("Soup" + i, 250 + i, 25 + i, 0);
+                    dishService.addDish(dish);
+                }
 
+                for (int i = 0; i < 3; i++){
+                    dish = new Dish("Fish" + i, 120 + i, 47 + i, 0);
+                    dishService.addDish(dish);
+                }
 
+                for (int i = 0; i < 5; i++){
+                    dish = new Dish("Steak" + i, 300 + i, 74 + i, 0);
+                    dishService.addDish(dish);
+                }
+
+                for (int i = 0; i < 5; i++){
+                    dish = new Dish("Steak" + i, 300 + i, 74 + i, null);
+                    dishService.addDish(dish);
+                }
 
 
 
@@ -88,5 +99,5 @@ public class Application {
 
             }
         };
-    }
+    }*/
 }

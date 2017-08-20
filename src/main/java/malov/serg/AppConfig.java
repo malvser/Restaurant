@@ -35,6 +35,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     @Value("${hbm2ddl.auto}")
     private String hbm2dllAuto;
 
+
+    /*@Bean
+    public Tablet tablet(int i++){
+
+    }*/
+
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf){
         return new JpaTransactionManager(emf);
