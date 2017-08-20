@@ -1,17 +1,12 @@
-package malov.serg;
+package malov.serg.Model;
 
-import lombok.NoArgsConstructor;
+import malov.serg.Application;
 import malov.serg.ad.AdvertisementManager;
 import malov.serg.ad.NoVideoAvailableException;
-import malov.serg.kitchen.Order;
-
 
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Entity
 @Table(name="tablets")
@@ -20,7 +15,7 @@ public class Tablet {
     @Id
     @GeneratedValue
     private long id;
-    private final int number;
+    private int number;
 
 
     //private Logger logger =  Logger.getLogger(Tablet.class.getName());
@@ -36,11 +31,19 @@ public class Tablet {
         setQueue(new Application().getOrderQueue());
     }
 
+    public Tablet(){
 
+    }
+
+
+
+    public LinkedBlockingQueue<Order> getQueue() {
+        return queue;
+    }
 
     public void createOrder()
     {
-        Order order = null;
+       /* Order order = null;
         try
         {
             order = new Order(this);
@@ -48,11 +51,11 @@ public class Tablet {
         }
         catch (IOException e) {
           //  logger.log(Level.SEVERE, "Console is unavailable.");
-        }
+        }*/
     }
     public void createTestOrder()
     {
-        Order order = null;
+      /* Order order = null;
         try
         {
             order = new Order(this);
@@ -60,7 +63,7 @@ public class Tablet {
         }
         catch (IOException e) {
           //  logger.log(Level.SEVERE, "Console is unavailable.");
-        }
+        }*/
     }
     private void initOrder(Order order)
     {
