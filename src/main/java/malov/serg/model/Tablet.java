@@ -6,11 +6,12 @@ import malov.serg.ad.NoVideoAvailableException;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Entity
-@Table(name="tablets")
-public class Tablet {
+@Table(name="tablet")
+public class Tablet implements Serializable {
 
     @Id
     @GeneratedValue

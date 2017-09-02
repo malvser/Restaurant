@@ -7,12 +7,13 @@ import malov.serg.ConsoleHelper;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name="orders")
 @NoArgsConstructor
-public class Order {
+public class Order implements Serializable {
 
     @Id
     @GeneratedValue

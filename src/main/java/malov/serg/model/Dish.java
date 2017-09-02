@@ -3,11 +3,12 @@ package malov.serg.Model;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="dish")
 @NoArgsConstructor
-public class Dish {
+public class Dish implements Serializable {
 
     //Fish(25), Steak(30), Soup(15), Juice(5), Water(3);
     @Id
