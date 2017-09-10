@@ -96,6 +96,7 @@
                                 </div>
                             </th>
                             <td width="60%"><h3>Name</h3></td>
+                            <td width="60%"><h3>queueOrders</h3></td>
 
                         </tr>
                         </thead>
@@ -106,6 +107,11 @@
                                     </td>
                                     <td><c:out value="${item.name}"/>
                                     </td>
+
+                                <c:forEach var="item2" items="${item.queueOrders}">
+                                    <td><c:out value="${item2.peek()}"/>
+                                    </td>
+                                </c:forEach>
                                 </tr>
                             </c:forEach>
                         </form>
