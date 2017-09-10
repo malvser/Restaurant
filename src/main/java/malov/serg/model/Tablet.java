@@ -7,17 +7,22 @@ import malov.serg.ad.NoVideoAvailableException;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Entity
 @Table(name="tablet")
 public class Tablet implements Serializable {
 
+
+    private static final long serialVersionUID = 6529685098L;
     @Id
     @GeneratedValue
     private long id;
     private int number;
-
+    @OneToMany(mappedBy = "table", cascade = CascadeType.PERSIST)
+    private List<Order> orders = new ArrayList<>();
 
     //private Logger logger =  Logger.getLogger(Tablet.class.getName());
     private LinkedBlockingQueue<Order> queue = new LinkedBlockingQueue<>();
@@ -36,7 +41,13 @@ public class Tablet implements Serializable {
 
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
 
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 
     public LinkedBlockingQueue<Order> getQueue() {
         return queue;

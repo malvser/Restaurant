@@ -45,7 +45,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/menu">Сброс поиска</a></li>
-                <li><a href="/add_dish">Добавить блюдо</a></li>
+                <li><a href="/add_tablet">Добавить стол</a></li>
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Help</a></li>
             </ul>
