@@ -107,23 +107,7 @@ public class MyController {
     }
 
 
-    @RequestMapping(value = "/give_order", method = RequestMethod.POST)
-    public String orderCook(Model model, @RequestParam(value = "id") long[] id) {
 
-        List<Tablet> tablet = tabletService.findAll();
-        int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
-        Order order = null;
-
-        try {
-            order = new Order(tablet.get(random), dishService.findArrayId(id));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        orderService.addOrder(order);
-        tabletService.addQueueOrder(tablet.get(random), order);
-        model.addAttribute("dishesArrayId", dishService.findArrayId(id));
-        return "give_order";
-    }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public String search(@RequestParam String pattern, Model model) {
@@ -220,6 +204,26 @@ public class MyController {
         return "cookList";
     }
 
+    @RequestMapping("/order_for_cooks")
+    public String orderForCooks(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
+
+        List<Order> orderList =  orderService.findAll();
+        Order order = null;
+        if(orderList.size() > 0){
+           order = orderList.get(0);
+           orderService.deleteOrder(order.getId());
+        }
+
+        model.addAttribute("allPages", page);
+        if(order != null) {
+            model.addAttribute("dishesList", order.getDishes());
+            model.addAttribute("numberTable", order.getTablet().getNumber());
+        }
+        model.addAttribute("allPages", getPageCountOrders());
+
+        return "order_for_cooks";
+    }
+
     @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
     public String deleteCook(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
         if (toDelete != null && toDelete.length > 0)
@@ -240,7 +244,27 @@ public class MyController {
     }
 
 
-    //AdvertisementController
+    @RequestMapping(value = "/made/order", method = RequestMethod.POST)
+    public String orderCook(Model model, @RequestParam(value = "id") long[] id) {
+
+            List<Tablet> tablet = tabletService.findAll();
+            int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
+            Order order = null;
+
+            try {
+                order = new Order(tablet.get(random), dishService.findArrayId(id));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            orderService.addOrder(order);
+
+            tabletService.addQueueOrder(tablet.get(random), order);
+
+
+            model.addAttribute("dishesArrayId", dishService.findArrayId(id));
+            return "order_cook";
+    }
+
 
 
     @RequestMapping("/advertisementList")
@@ -391,6 +415,11 @@ public class MyController {
 
     private long getPageCountAdvertisement() {
         long totalCount = advertisementPhotoService.count();
+        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+    }
+
+    private long getPageCountOrders() {
+        long totalCount = orderService.count();
         return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
     }
 
