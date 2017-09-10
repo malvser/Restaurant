@@ -4,6 +4,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="dish")
@@ -11,20 +13,27 @@ import java.io.Serializable;
 public class Dish implements Serializable {
 
     //Fish(25), Steak(30), Soup(15), Juice(5), Water(3);
+
+    private static final long serialVersionUID = 365985541L;
     @Id
     @GeneratedValue
     private long id;
     @Column(name = ("photo"), length = 16777215)
     private byte[] photo;
-    @ManyToOne
-    @JoinColumn(name="order_id")
-    private Order order;
+
+    @ManyToMany(mappedBy = "dishes", cascade = CascadeType.PERSIST)
+    private List<Order> order = new ArrayList<>();
+
     private String name;
     private int cost;
     private int weight;
     private int discount;
     private int duration;
 
+
+    public List<Order> getOrder() {
+        return order;
+    }
 
     public String getName() {
         return name;
