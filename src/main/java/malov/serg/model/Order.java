@@ -8,6 +8,7 @@ import malov.serg.ConsoleHelper;
 import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,23 +16,34 @@ import java.util.List;
 @NoArgsConstructor
 public class Order implements Serializable {
 
+
+    private static final long serialVersionUID = 6158646455L;
     @Id
     @GeneratedValue
     private long id;
-    @OneToMany(mappedBy="order", cascade=CascadeType.ALL)
-    private List<Dish> dishes;
-    @OneToOne
+    @ManyToMany
+    @JoinTable(
+            name="OrderDish",
+            joinColumns={@JoinColumn(name="order_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="dish_id", referencedColumnName="id")})
+    private List<Dish> dishes = new ArrayList<>();
+    @ManyToOne
     @JoinColumn(name="tablet_id")
-    private Tablet tablet;
+    private Tablet table;
 
 
     public List<Dish> getDishes()
     {
         return dishes;
     }
+
+    public void setDishes(List<Dish> dishes) {
+        this.dishes = dishes;
+    }
+
     public Order(Tablet tablet, List<Dish> dishes) throws IOException
     {
-        this.tablet = tablet;
+        this.table = tablet;
         this.dishes = dishes;
         //ConsoleHelper.writeMessage(Dish.allDishesToString());
         //initDishes();
@@ -57,13 +69,13 @@ public class Order implements Serializable {
     }
 
     public Tablet getTablet() {
-        return tablet;
+        return table;
     }
 
     @Override
     public String toString()
     {
-        return dishes.isEmpty() ? "" : String.format("Your order: %s of Tablet{number=%d}",dishes,tablet.getNumber());
+        return dishes.isEmpty() ? "" : String.format("Your order: %s of Tablet{number=%d}",dishes, table.getNumber());
     }
 
     public long getId() {

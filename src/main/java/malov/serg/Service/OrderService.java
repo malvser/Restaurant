@@ -27,6 +27,25 @@ public class OrderService {
         return findId;
     }
 
+
+    @Transactional
+    public Order findOne(long id) {
+
+        return orderRepository.getOne(id);
+    }
+
+    @Transactional
+    public void deleteOrder(long id) {
+
+            orderRepository.delete(id);
+    }
+
+    @Transactional
+    public List<Order> findAll(){
+
+        return orderRepository.findAll();
+    }
+
     @Transactional
     public void addOrder(Order order) {
         try {
@@ -34,6 +53,11 @@ public class OrderService {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public long count() {
+        return orderRepository.count();
     }
 
 

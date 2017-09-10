@@ -97,24 +97,25 @@
         <h3 align="center">или часть их и нажмите кнопку "Подтвердить заказ" </h3>
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <form action="/delete_choose" method="post">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th> <b>Все</b> <input type="checkbox" id="alls" /> </th>
-                            <th width="20%"><h3>Name</h3></th>
-                            <th width="20%"><h3>Weight</h3></th>
-                            <th width="40%"><h3>Cost</h3></th>
-                            <th width="30%"><h3>Discount</h3></th>
-                            <th width="30%"><h3>Photo</h3></th>
+            <form action="/made/order" method="post">
+                <form action="/delete_choose" method="post">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th><b>Все</b> <input type="checkbox" id="alls"/></th>
+                                <th width="20%"><h3>Name</h3></th>
+                                <th width="20%"><h3>Weight</h3></th>
+                                <th width="40%"><h3>Cost</h3></th>
+                                <th width="30%"><h3>Discount</h3></th>
+                                <th width="30%"><h3>Photo</h3></th>
 
 
-                        </tr>
-                        </thead>
-                        <form class="form-control" enctype="multipart/form-data" method="post">
+                            </tr>
+                            </thead>
+                            <form class="form-control" enctype="multipart/form-data" method="post">
 
-                            <c:forEach var="item" items="${dishesArrayId}">
+                                <c:forEach var="item" items="${dishesArrayId}">
 
 
                                     <td><input type="checkbox" align="center" name="id" value="${item.id}"/>
@@ -135,15 +136,15 @@
                                     </td>
 
 
-                                </tr>
+                                    </tr>
 
-                            </c:forEach>
+                                </c:forEach>
 
-                        </form>
-                    </table>
-                </div>
-            </form>
-            <form action="/advertisement/view" >
+                            </form>
+                        </table>
+                    </div>
+                </form>
+
 
                 <div class="btn-group" role="group">
                     <input type="submit" id="buttons-hbox" class="btn btn-success" value="Подтвердить заказ">
