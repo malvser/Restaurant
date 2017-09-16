@@ -3,7 +3,6 @@ package malov.serg.Web;
 import malov.serg.Model.*;
 import malov.serg.PhotoNotFoundException;
 import malov.serg.Service.*;
-import malov.serg.ad.Advertisement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +48,9 @@ public class MyController {
     @Autowired
     private CookService cookService;
 
+    @Autowired
+    private CookedOrderService cookedOrderService;
+
 
     //DishController
 
@@ -56,6 +58,13 @@ public class MyController {
     public String index() {
         return "index";
     }
+
+    @RequestMapping("/enter_cook")
+    public String indexCook() {
+        return "index_cook";
+    }
+
+
 
 
     @RequestMapping("/menu")
@@ -207,28 +216,41 @@ public class MyController {
     @RequestMapping("/order_for_cooks")
     public String orderForCooks(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
 
-        List<Order> orderList =  orderService.findAll();
+        List<Order> orderList = orderService.findAll();
         Order order = null;
-        if(orderList.size() > 0){
-           order = orderList.get(0);
-           orderService.deleteOrder(order.getId());
+        if (orderList.size() > 0) {
+            for(int i = 0; i < orderList.size(); i++){
+                if(!orderList.get(i).getCooking()){
+                    order = orderList.get(i);
+                    order.setCooking(true);
+                    orderService.addOrder(order);
+                    break;
+                }
+            }
         }
-
-        model.addAttribute("allPages", page);
         if(order != null) {
             model.addAttribute("dishesList", order.getDishes());
             model.addAttribute("numberTable", order.getTablet().getNumber());
+            model.addAttribute("orderId", order.getId());
         }
+        model.addAttribute("allPages", page);
         model.addAttribute("allPages", getPageCountOrders());
 
         return "order_for_cooks";
+    }
+
+    @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
+    public String cookedOrder(@RequestParam(value = "order_id") Long order_id ){
+
+        orderService.deleteOrder(order_id);
+
+        return "redirect:/order_for_cooks";
     }
 
     @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
     public String deleteCook(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
         if (toDelete != null && toDelete.length > 0)
             cookService.deleteCookes(toDelete);
-
         return "cookList";
     }
 
@@ -252,13 +274,13 @@ public class MyController {
             Order order = null;
 
             try {
-                order = new Order(tablet.get(random), dishService.findArrayId(id));
+                order = new Order(tablet.get(random), dishService.findArrayId(id), false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             orderService.addOrder(order);
 
-            tabletService.addQueueOrder(tablet.get(random), order);
+            //tabletService.addQueueOrder(tablet.get(random), order);
 
 
             model.addAttribute("dishesArrayId", dishService.findArrayId(id));
@@ -291,7 +313,7 @@ public class MyController {
 
         for (AdvertisementPhoto adv : advertisementPhotos) {
 
-            if(adv.getHits() <= 0){
+            if(adv.getAmount() <= 0){
                 advertisementPhotoService.deleteId(adv.getId());
             }
         }
@@ -302,8 +324,8 @@ public class MyController {
         long id = advertisementPhotos.get(random).getId();
 
         AdvertisementPhoto adv = advertisementPhotos.get(random);
-        int hits = adv.getHits();
-        adv.setHits(hits - 1);
+        int hits = adv.getAmount();
+        adv.setAmount(hits - 1);
         advertisementPhotoService.addAdvertisement(adv);
 
         model.addAttribute("photo_id",id);
@@ -318,7 +340,7 @@ public class MyController {
 
         for (AdvertisementPhoto adv : advertisementPhotos) {
 
-            if(adv.getHits() <= 0){
+            if(adv.getAmount() <= 0){
                 advertisementPhotoService.deleteId(adv.getId());
             }
         }
@@ -333,15 +355,15 @@ public class MyController {
                 if((y = i + 1) < advertisementPhotos.size()){
                     idNext = advertisementPhotos.get(y).getId();
                     AdvertisementPhoto adv = advertisementPhotos.get(y);
-                    int hits = adv.getHits();
-                    adv.setHits(hits - 1);
+                    int amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
                     advertisementPhotoService.addAdvertisement(adv);
                     break;
                 }else{
                     idNext = advertisementPhotos.get(0).getId();
                     AdvertisementPhoto adv = advertisementPhotos.get(0);
-                    int hits = adv.getHits();
-                    adv.setHits(hits - 1);
+                    int amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
                     advertisementPhotoService.addAdvertisement(adv);
                     break;
 
@@ -371,11 +393,13 @@ public class MyController {
                           HttpServletRequest request,
                           HttpServletResponse response,
                           @RequestParam int initialAmount,
-                          @RequestParam int hits) {
+                          @RequestParam int amount,
+                          @RequestParam int total_amount) {
 
 
         try {
-            AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name, initialAmount, hits);
+            AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
+                    initialAmount, amount, total_amount);
             advertisementPhotoService.addAdvertisement(advertisementPhoto);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
