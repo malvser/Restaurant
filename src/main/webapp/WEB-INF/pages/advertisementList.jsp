@@ -127,7 +127,7 @@
                                     </td>
                                     <td><c:out value="${item.name}"/>
                                     <td><c:out value="${item.initialAmount}"/>
-                                    <td><c:out value="${item.hits}"/>
+                                    <td><c:out value="${item.amount}"/>
 
                                     <td>
                                         <div id="aaa"

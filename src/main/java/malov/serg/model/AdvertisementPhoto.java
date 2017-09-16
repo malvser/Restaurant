@@ -17,18 +17,27 @@ public class AdvertisementPhoto {
     private byte[] photo;
     private String name;
     private int initialAmount;  // — начальная сумма, стоимость рекламы в копейках.
-    private int hits; // — количество оплаченных показов
+    private int amount; // — количество оплаченных показов
+    private int total_amount; // общее количество
    // private int amountPerOneDisplaying;
 
 
-    public AdvertisementPhoto(byte[] photo, String name, int initialAmount, int hits) {
+    public AdvertisementPhoto(byte[] photo, String name, int initialAmount, int amount, int total_amount) {
         this.photo = photo;
         this.name = name;
         this.initialAmount = initialAmount;
-        this.hits = hits;
+        this.amount = amount;
+        this.total_amount = total_amount;
         //this.amountPerOneDisplaying = amountPerOneDisplaying;
     }
 
+    public void setTotal_amount(int total_amount) {
+        this.total_amount = total_amount;
+    }
+
+    public int getTotal_amount() {
+        return total_amount;
+    }
 
     public byte[] getPhoto() {
         return photo;
@@ -42,12 +51,12 @@ public class AdvertisementPhoto {
         return initialAmount;
     }
 
-    public int getHits() {
-        return hits;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setHits(int hits) {
-        this.hits = hits;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public long getId() {

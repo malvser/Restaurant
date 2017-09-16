@@ -16,7 +16,8 @@
 
         <input class="form-control form-group" type="text" name="name" placeholder="Имя">
         <input class="form-control form-group" type="text" name="initialAmount" placeholder="Стоимость">
-        <input class="form-control form-group" type="text" name="hits" placeholder="Количество оплаченных показов">
+        <input class="form-control form-group" type="text" name="amount" placeholder="Оставшееся количество оплаченных показов">
+        <input class="form-control form-group" type="text" name="total_amount" placeholder="Общее количество оплаченных показов">
         <input type="file" name="photo">
         <p></p>
         <input type="submit" class="btn btn-primary" value="Add">
