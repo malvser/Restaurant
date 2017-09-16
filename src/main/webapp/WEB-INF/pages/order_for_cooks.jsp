@@ -40,7 +40,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a id="add_contact" class="navbar-brand" href="/">Главная</a>
+            <a id="add_contact" class="navbar-brand" href="/enter_cook">Главная</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -84,32 +84,25 @@
 
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-        <form action="/order" method="post">
+        <form action="/cooked_order" method="post">
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th width="10%" align="right">
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <div class="btn-group" role="group">
-                                    <input type="submit" id="buttons-hbox" class="btn btn-success" value="Order">
-                                </div>
-                            </div>
-                        </th>
-                        <td width="20%"><h3>Order_id</h3></td>
-                        <td width="20%"><h3>Tablet</h3></td>
-
+                        <td width="20%"><h3>Dish</h3></td>
+                        <td width="20%"><h3>Weight</h3></td>
+                        <td width="20%"><h3>Table №</h3></td>
+                        <td width="20%"><h3>Photo</h3></td>
 
                     </tr>
                     </thead>
                     <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
                         <c:forEach var="item" items="${dishesList}">
                             <tr>
-                                <td><input type="checkbox" align="center" name="id" value="${item.id}"/>
-                                </td>
                                 <td><c:out value="${item.name}"/>
                                 <td><c:out value="${item.weight}"/>
                                 <td><c:out value="${numberTable}"/>
+
 
                                 <td>
                                     <div id="aaa"
@@ -125,7 +118,13 @@
                         </c:forEach>
                     </form>
                 </table>
+                <input hidden name="order_id" value="${orderId}">
+
             </div>
+            <div class="btn-group" role="group">
+                <input type="submit" id="buttons-hbox" class="btn btn-success" value="Order is ready / Get new order">
+            </div>
+
         </form>
 
         <nav aria-label="Page navigation">
@@ -151,7 +150,7 @@
 <!-- подтверждающее окно  jquery -->
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
-
+<script src="resources/js/checkboxAll.js"></script>
 
 
 </body>
