@@ -3,16 +3,13 @@ package malov.serg.Model;
 
 
 
-import malov.serg.statistic.event.EventDataRow;
-import malov.serg.statistic.event.EventType;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "cookedorder")
-public class CookedOrder implements EventDataRow {
+public class CookedOrder {
 
     @Id
     @GeneratedValue
@@ -75,20 +72,7 @@ public class CookedOrder implements EventDataRow {
         this.date = date;
     }
 
-    @Override
-    public EventType getType() {
-        return EventType.COOKED_ORDER;
-    }
 
-    @Override
-    public Date getDate() {
-        return date;
-    }
-
-    @Override
-    public int getTime() {
-        return cookingTimeSeconds;
-    }
 
     public String getCookName() {
         return cookName;
