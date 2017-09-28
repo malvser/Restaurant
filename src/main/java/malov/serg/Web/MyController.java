@@ -12,6 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -51,16 +56,102 @@ public class MyController {
     @Autowired
     private CookedOrderService cookedOrderService;
 
+    @Autowired
+    private ViewedAdvertisementService viewedAdvertisementService;
+
+    @Autowired
+    private NoAdvertisementService noAdvertisementService;
+
+    @Autowired
+    private UserService userService;
+
+    //Spring Security
+
+
+
+    @RequestMapping("/unauthorized")
+    public String unauthorized(Model model){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("login", user.getUsername());
+        return "unauthorized";
+    }
+
+    @RequestMapping("/register")
+    public String register() {
+        return "register";
+    }
+
+
+    @RequestMapping(value = "/newuser", method = RequestMethod.POST)
+    public String update(@RequestParam String login,
+                         @RequestParam String password,
+                         @RequestParam(required = false) String email,
+                         @RequestParam(required = false) String phone,
+                         Model model) {
+        if (userService.existsByLogin(login)) {
+            model.addAttribute("exists", true);
+            return "register";
+        }
+
+        ShaPasswordEncoder encoder = new ShaPasswordEncoder();
+        String passHash = encoder.encodePassword(password, null);
+
+        CustomUser dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
+        userService.addUser(dbUser);
+
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public String update(@RequestParam(required = false) String email, @RequestParam(required = false) String phone) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+
+        //изменить код. на синхронизацию
+        CustomUser dbUser = userService.getUserByLogin(login);
+        dbUser.setEmail(email);
+        dbUser.setPhone(phone);
+
+        userService.updateUser(dbUser);
+
+        return "redirect:/menu";
+    }
+
+    @RequestMapping("/name")
+    public String name() {
+
+        return "name";
+    }
+
 
     //DishController
 
     @RequestMapping("/")
-    public String index() {
+    public String index(Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+
+        CustomUser dbUser = userService.getUserByLogin(login);
+
+        model.addAttribute("login", login);
+        model.addAttribute("roles", user.getAuthorities());
+        model.addAttribute("email", dbUser.getEmail());
+        model.addAttribute("phone", dbUser.getPhone());
+
         return "index";
     }
 
+    /*@RequestMapping("/login")
+    public String login() {
+        return "login";
+    }*/
+
     @RequestMapping("/enter_cook")
-    public String indexCook() {
+    public String indexCook(Model model) {
+
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
         return "index_cook";
     }
 
@@ -69,6 +160,7 @@ public class MyController {
 
     @RequestMapping("/menu")
     public String index(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+
         if (page < 0) page = 0;
 
         List<Dish> dishes = dishService
@@ -240,8 +332,23 @@ public class MyController {
     }
 
     @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
-    public String cookedOrder(@RequestParam(value = "order_id") Long order_id ){
+    public String cookedOrder(@RequestParam(value = "order_id") long order_id){
+        Order order = orderService.findOne(order_id);
+        Date date = new Date();
+        long[] id = new long[order.getDishes().size()];
+        int i = 0;
+        for (Dish dish : order.getDishes()) {
+            id[i] = dish.getId();
+            i++;
+        }
 
+        List <Cook> cooks = cookService.findAll();
+        //переделать с рандом на конкрет. повара
+        int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
+        CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
+                cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime(),date);
+//        StatisticManager.getInstance().register(cookedOrder);
+        cookedOrderService.addCookedOrder(cookedOrder);
         orderService.deleteOrder(order_id);
 
         return "redirect:/order_for_cooks";
@@ -279,15 +386,21 @@ public class MyController {
                 e.printStackTrace();
             }
             orderService.addOrder(order);
-
-            //tabletService.addQueueOrder(tablet.get(random), order);
-
+            orderService.addOrder(order);
+        String s = "";
+        for (long i : id ) {
+            s += "" + i + " ";
+        }
 
             model.addAttribute("dishesArrayId", dishService.findArrayId(id));
+            model.addAttribute("Id", s);
             return "order_cook";
     }
 
 
+
+
+    // AdvertisementController
 
     @RequestMapping("/advertisementList")
     public String advertisementList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
@@ -298,7 +411,6 @@ public class MyController {
 
 
         model.addAttribute("allPages", page);
-
         model.addAttribute("advertisement", advertisementPhotos);
         model.addAttribute("allPages", getPageCountAdvertisement());
 
@@ -307,62 +419,112 @@ public class MyController {
 
 
     @RequestMapping(value = "/advertisement/view")
-    public String onView(Model model) {
+    public String onView(Model model, @RequestParam("IdDishes") String idDishes) {
 
-        List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService.findAll();
+        List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
+        if(advertisementPhotos.size() > 0) {
 
-        for (AdvertisementPhoto adv : advertisementPhotos) {
+            int random = (ThreadLocalRandom.current().nextInt(advertisementPhotos.size()));
+            long id = advertisementPhotos.get(random).getId();
 
-            if(adv.getAmount() <= 0){
-                advertisementPhotoService.deleteId(adv.getId());
+            AdvertisementPhoto adv = advertisementPhotos.get(random);
+            Long amount = adv.getAmount();
+            adv.setAmount(amount - 1);
+            advertisementPhotoService.addAdvertisement(adv);
+
+            addViewedAdvertisement(id);
+
+            model.addAttribute("photo_id", id);
+        }else{
+
+                String[] array = idDishes.split(" ");
+                long[] arrayId = new long[array.length];
+            for (int i = 0; i < array.length; i++) {
+                arrayId[i] = Long.parseLong(array[i]);
             }
+               // System.out.println("idDishes = " + idDishes);
+
+            List<Dish> dishes = dishService.findArrayId(arrayId);
+            long sumDuration = 0;
+            for (Dish dish :dishes) {
+                sumDuration += dish.getDuration();
+            }
+            NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
+            noAdvertisementService.addNoAdvertisement(noAdvertisement);
+
         }
-
-        advertisementPhotos = advertisementPhotoService.findAll();
-
-        int random = (ThreadLocalRandom.current().nextInt(advertisementPhotos.size()));
-        long id = advertisementPhotos.get(random).getId();
-
-        AdvertisementPhoto adv = advertisementPhotos.get(random);
-        int hits = adv.getAmount();
-        adv.setAmount(hits - 1);
-        advertisementPhotoService.addAdvertisement(adv);
-
-        model.addAttribute("photo_id",id);
 
         return "advertisement_view";
     }
 
+
+
     @RequestMapping(value = "/advertisement/view/{photo_id}")
     public String onViewNext(Model model, @PathVariable("photo_id") long id) {
 
-        List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService.findAll();
+        List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
 
-        for (AdvertisementPhoto adv : advertisementPhotos) {
 
-            if(adv.getAmount() <= 0){
-                advertisementPhotoService.deleteId(adv.getId());
+
+            long idNext = 0;
+            int y;
+            for (int i = 0; i < advertisementPhotos.size(); i++) {
+
+                if (advertisementPhotos.get(i).getId() == id) {
+                    if ((y = i + 1) < advertisementPhotos.size()) {
+                        idNext = advertisementPhotos.get(y).getId();
+                        AdvertisementPhoto adv = advertisementPhotos.get(y);
+                        Long amount = adv.getAmount();
+                        adv.setAmount(amount - 1);
+                        advertisementPhotoService.addAdvertisement(adv);
+                        break;
+                    } else {
+                        idNext = advertisementPhotos.get(0).getId();
+                        AdvertisementPhoto adv = advertisementPhotos.get(0);
+                        Long amount = adv.getAmount();
+                        adv.setAmount(amount - 1);
+                        advertisementPhotoService.addAdvertisement(adv);
+                        break;
+
+                    }
+                }
             }
-        }
 
-        advertisementPhotos = advertisementPhotoService.findAll();
+        addViewedAdvertisement(idNext);
 
-        long idNext = 0;
-        int y = 0;
+            model.addAttribute("photo_id", idNext);
+
+
+        return "advertisement_view";
+    }
+
+
+
+
+    @RequestMapping(value = "/advertisement/viewed/{photo_id}")
+    public String onViewBack(Model model, @PathVariable("photo_id") long id) {
+
+        List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
+
+
+        long idBack = 0;
+        int y;
         for (int i = 0; i < advertisementPhotos.size(); i++) {
 
-            if(advertisementPhotos.get(i).getId() == id){
-                if((y = i + 1) < advertisementPhotos.size()){
-                    idNext = advertisementPhotos.get(y).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(y);
-                    int amount = adv.getAmount();
-                    adv.setAmount(amount - 1);
-                    advertisementPhotoService.addAdvertisement(adv);
-                    break;
-                }else{
-                    idNext = advertisementPhotos.get(0).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(0);
-                    int amount = adv.getAmount();
+            if (advertisementPhotos.get(i).getId() == id) {
+                if(i > 0) {
+                        y = i - 1;
+                        idBack = advertisementPhotos.get(y).getId();
+                        AdvertisementPhoto adv = advertisementPhotos.get(y);
+                        Long amount = adv.getAmount();
+                        adv.setAmount(amount - 1);
+                        advertisementPhotoService.addAdvertisement(adv);
+                        break;
+
+                }else {
+                    idBack = advertisementPhotos.get(advertisementPhotos.size() - 1).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(advertisementPhotos.size() - 1);
+                    Long amount = adv.getAmount();
                     adv.setAmount(amount - 1);
                     advertisementPhotoService.addAdvertisement(adv);
                     break;
@@ -371,9 +533,10 @@ public class MyController {
             }
         }
 
+        addViewedAdvertisement(idBack);
 
+        model.addAttribute("photo_id", idBack);
 
-        model.addAttribute("photo_id",idNext);
 
         return "advertisement_view";
     }
@@ -392,14 +555,14 @@ public class MyController {
                           @RequestParam(value = "photo") MultipartFile body_photo,
                           HttpServletRequest request,
                           HttpServletResponse response,
-                          @RequestParam int initialAmount,
-                          @RequestParam int amount,
-                          @RequestParam int total_amount) {
+                          @RequestParam long cost,
+                          @RequestParam long amount,
+                          @RequestParam long total_amount) {
 
 
         try {
             AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
-                    initialAmount, amount, total_amount);
+                    cost, amount, total_amount);
             advertisementPhotoService.addAdvertisement(advertisementPhoto);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -426,15 +589,69 @@ public class MyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-   /* @RequestMapping("/photo/advertisement/{photo_id}")
-    public void getPhotoAdvertisement(HttpServletRequest request, HttpServletResponse response, @PathVariable("photo_id") long photoId) {
-        try {
-            byte[] content = advertisementPhotoService.getPhotoOne(photoId);
-            responsePhoto(response, content);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+    //StatisticController
+
+    @RequestMapping("/statistic/cooked_order")
+    public String statisticCookedOrder(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
+
+        List<CookedOrder> cookedOrderList = cookedOrderService.findAll(new PageRequest
+                (page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
+
+        model.addAttribute("cookedOrderList", cookedOrderList);
+        //model.addAttribute("cookedOrderList", cookedOrderList);
+
+
+
+        model.addAttribute("allPages", page);
+        model.addAttribute("allPages", getPageCountOrders());
+
+        return "statistics_cooked_order";
+    }
+
+
+    @RequestMapping("/statistic/viewed_advertisement")
+    public String statisticViewedAdvertisement(Model model){
+
+        List<ViewedAdvertisement> viewedAdvertisements = viewedAdvertisementService.findAll();
+        model.addAttribute("viewedAdvertisements", viewedAdvertisements);
+        return "statistics_viewed_advertisement";
+    }
+
+    @RequestMapping("/statistic/no_advertisement")
+    public String statisticNoAdvertisement(Model model){
+
+        List<NoAdvertisement> noAdvertisements = noAdvertisementService.findAll();
+        model.addAttribute("noAdvertisements", noAdvertisements);
+        return "statistics_no_advertisement";
+    }
+
+    @RequestMapping("/director/pages")
+    public String statisticForDirector(){
+        return "director_page";
+    }
+
+
+    //methods
+
+    private List<AdvertisementPhoto> getAdvertisementPhotos() {
+        List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService.findAll();
+
+        for (AdvertisementPhoto adv : advertisementPhotos) {
+
+            if(adv.getAmount() <= 0){
+                advertisementPhotoService.deleteId(adv.getId());
+            }
         }
-    }*/
+
+        advertisementPhotos = advertisementPhotoService.findAll();
+        return advertisementPhotos;
+    }
+
+    private void addViewedAdvertisement(long id) {
+        ViewedAdvertisement viewedAdvertisement = new ViewedAdvertisement(advertisementPhotoService.findOne(id),
+                advertisementPhotoService.findOne(id).getCost());
+        viewedAdvertisementService.addViewedAdvertisement(viewedAdvertisement);
+    }
 
 
     private long getPageCountAdvertisement() {
@@ -468,21 +685,6 @@ public class MyController {
         return (totalCount / ITEMS_PER_PAGE_TABLET) + ((totalCount % ITEMS_PER_PAGE_TABLET > 0) ? 1 : 0);
     }
 
-    private ResponseEntity<byte[]> allphotos() {
-        List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService.findAll();
-
-        int random = (ThreadLocalRandom.current().nextInt(advertisementPhotos.size()));
-        long id = advertisementPhotos.get(random).getId();
-        byte[] bytes = advertisementPhotoService.get(id).getPhoto();
-        if (bytes == null)
-            throw new PhotoNotFoundException();
-
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-
-        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
-    }
 
     private ResponseEntity<byte[]> photoById(long id) {
         byte[] bytes = advertisementPhotoService.get(id).getPhoto();
