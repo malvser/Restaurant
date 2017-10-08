@@ -1,13 +1,16 @@
 package malov.serg.Model;
 
 
-import lombok.NoArgsConstructor;
 
+import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="advertisement")
 @NoArgsConstructor
+
 public class AdvertisementPhoto {
 
     @Id
@@ -16,26 +19,28 @@ public class AdvertisementPhoto {
     @Column(name = ("photo"), length = 16777215)
     private byte[] photo;
     private String name;
-    private int initialAmount;  // — начальная сумма, стоимость рекламы в копейках.
-    private int amount; // — количество оплаченных показов
-    private int total_amount; // общее количество
-   // private int amountPerOneDisplaying;
+    private long cost;  // —  стоимость рекламы за показ.
+    private long amount; // — количество оплаченных показов
+    private long total_amount; // общее количество
+    @OneToMany(mappedBy = "viewedAdvertisement", cascade = CascadeType.ALL)
+    private List<ViewedAdvertisement> advertisementPhotos = new ArrayList<>();
 
 
-    public AdvertisementPhoto(byte[] photo, String name, int initialAmount, int amount, int total_amount) {
+
+    public AdvertisementPhoto(byte[] photo, String name, Long cost, Long amount, Long total_amount) {
         this.photo = photo;
         this.name = name;
-        this.initialAmount = initialAmount;
+        this.cost = cost;
         this.amount = amount;
         this.total_amount = total_amount;
         //this.amountPerOneDisplaying = amountPerOneDisplaying;
     }
 
-    public void setTotal_amount(int total_amount) {
+    public void setTotal_amount(long total_amount) {
         this.total_amount = total_amount;
     }
 
-    public int getTotal_amount() {
+    public long getTotal_amount() {
         return total_amount;
     }
 
@@ -47,15 +52,15 @@ public class AdvertisementPhoto {
         return name;
     }
 
-    public long getInitialAmount() {
-        return initialAmount;
+    public long getCost() {
+        return cost;
     }
 
-    public int getAmount() {
+    public long getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(long amount) {
         this.amount = amount;
     }
 
