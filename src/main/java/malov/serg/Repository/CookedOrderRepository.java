@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface CookedOrderRepository extends JpaRepository<CookedOrder, Long> {
 
-    @Query("SELECT c FROM CookedOrder c WHERE LOWER(c.cookName) LIKE LOWER(CONCAT('%', :pattern, '%'))")
+    @Query("SELECT c FROM CookedOrder c WHERE LOWER(c.date) LIKE LOWER(CONCAT('%', :pattern, '%'))")
     List<CookedOrder> findByPattern(@Param("pattern") String pattern, Pageable pageable);
 }

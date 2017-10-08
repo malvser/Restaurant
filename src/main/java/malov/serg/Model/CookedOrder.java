@@ -4,6 +4,7 @@ package malov.serg.Model;
 
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -25,23 +26,28 @@ public class CookedOrder {
             joinColumns={@JoinColumn(name="cookedOrder_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="dish_id", referencedColumnName="id")})
     private List<Dish> cookingDishes;   // — список блюд для приготовления
-    private Date date;
+    private String date;
     @ManyToOne
     @JoinColumn(name="cookCookedOrder_id")
     private Cook cookCookedOrder;
 
 
-    public CookedOrder(Integer tabletName, Cook cookCookedOrder, List<Dish> cookedDish, int cookingTimeSeconds, Date date) {
+    public CookedOrder(Integer tabletName, Cook cookCookedOrder, List<Dish> cookedDish, int cookingTimeSeconds) {
         this.tabletNumber = tabletName;
         this.cookCookedOrder = cookCookedOrder;
         this.cookingTimeSeconds = cookingTimeSeconds;
         this.cookingDishes = cookedDish;
         this.cookName = cookCookedOrder.getName();
-        this.date = date;
+        this.date = DateFormat();
 
     }
 
     public CookedOrder() {
+    }
+
+    public String DateFormat(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        return simpleDateFormat.format(new Date());
     }
 
     public Cook getCookCookedOrder() {
@@ -68,11 +74,13 @@ public class CookedOrder {
         return cookingDishes;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-
+    public String getDate() {
+        return date;
+    }
 
     public String getCookName() {
         return cookName;
