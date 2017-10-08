@@ -1,7 +1,5 @@
 package malov.serg.Model;
 
-import malov.serg.ad.AdvertisementManager;
-
 
 import javax.persistence.*;
 import java.io.Serializable;
