@@ -60,21 +60,19 @@
             </button>
             <a id="main" class="navbar-brand" href="/">Главная</a>
 
-            <form class="navbar-form navbar-left" method="post">
-                <button class="btn btn-danger" type="button" id="modal" >Удалить</button>
-            </form>
+               <form class="navbar-form navbar-right" method="post">
+                    <button class="btn btn-danger" type="button" id="modal" >Удалить</button>
+               </form>
 
-
-
-        </div>
+       </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/statistic_cooked_order">Сброс поиска</a></li>
+                <li><a href="/statistic_viewed_advertisement">Сброс поиска</a></li>
                 <li> <a>Ваш логин: ${login}</a></li>
                 <li><a href="/logout">Выход</a></li>
             </ul>
 
-            <form class="navbar-form navbar-right" role="search" action="/search_cooked_order" method="post">
+            <form class="navbar-form navbar-right" role="search" action="/search_viewed_advertisement" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" name="pattern" placeholder="Поиск по дате">
                 </div>
@@ -94,8 +92,8 @@
 
             <ul class="nav nav-sidebar">
 
-                <li class="active"><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
-                <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
+                <li><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
+                <li class="active"><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
                 <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
                 <li><a href="/advertisement/add_page"><b>Добавить рекламу</b></a></li>
                 <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
@@ -121,74 +119,58 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
+                           <!-- <th width="10%" align="right">
+                                <button class="btn btn-danger" type="button" id="modal" >Удалить</button>
 
-
-
-
+                            </th>
+                            -->
                             <th width="1%"><font size="6" color="#ff6347" face="Monotype Corsiva"><em>
                                 Все  <input type="checkbox" id="alls"/></em></font>
                             </th>
 
-                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                            <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Дата</em></font>
                             </th>
-                            <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Стол</em></font>
-                            </th>
+
                             <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Имя повара</em></font>
+                                Назв. рекл.</em></font>
                             </th>
                             <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Готовка (мин.)</em></font>
+                                Выгода</em></font>
                             </th>
 
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Общее к-во показов</em></font>
+                            </th>
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                К-во показов </em></font>
+                            </th>
+                            <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Фото</em></font>
+                            </th>
 
 
                         </tr>
                         </thead>
                         <form class="form-control" enctype="multipart/form-data"  method="post">
-                            <c:forEach var="item" items="${cookedOrderList}">
+                            <c:forEach var="item" items="${viewedAdvertisements}">
                                 <tr>
-                                    <td><input type="checkbox" align="center" name="toDelete[]" value="${item.id}"/>
-                                    </td>
+                                    <td><input type="checkbox" align="center" name="id" value="${item.id}"/>
                                     <td><c:out value="${item.date}"/>
-                                    <td><c:out value="${item.tabletNumber}"/>
-                                    <td><c:out value="${item.cookCookedOrder.name}"/>
-                                    <td><c:out value="${item.cookingTimeSeconds}"/>
-                                        <c:forEach var="item2" items="${item.cookingDishes}">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                                    Блюдо</em></font>
-                                                </th>
-                                                <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                                    Вес</em></font>
-                                                </th>
-                                                <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                                    Стоим.</em></font>
-                                                </th>
-                                                <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                                    Скидка</em></font>
-                                                </th>
-                                                <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                                    Фото</em></font>
-                                                </th>
+                                    <td><c:out value="${item.viewedAdvertisement.name}"/>
+                                    <td><c:out value="${item.profit}"/>
+                                    <td><c:out value="${item.viewedAdvertisement.total_amount}"/>
+                                    <td><c:out value="${item.viewedAdvertisement.amount}"/>
+                                    <td>
+                                        <div id="aaa"
+                                             style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
+                                            <a href="#" class="thumbnail" style="">
+                                                <img width="60" height="60" src="/photo/advertisement/${item.viewedAdvertisement.id}"/>
+                                            </a>
+                                        </div>
+                                    </td>
 
-                                                </thead>
-                                                <td><c:out value="${item2.name}"/>
-                                                <td><c:out value="${item2.weight}"/>
-                                                <td><c:out value="${item2.cost}"/>
-                                                <td><c:out value="${item2.discount}"/>
-                                                <td>
-                                                    <div id="aaa"
-                                                         style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
-                                                        <a href="#" class="thumbnail" style="">
-                                                            <img width="60" height="60" src="/photo/${item2.id}"/>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </table>
-                                        </c:forEach>
+
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -201,7 +183,7 @@
                 <ul class="pagination">
                     <c:if test="${allPages ne null}">
                         <c:forEach var="i" begin="1" end="${allPages}">
-                            <li><a href="/statistic_cooked_order?page=<c:out value="${i - 1}"/>"><c:out value="${i}"/></a></li>
+                            <li><a href="/statistic_viewed_advertisement?page=<c:out value="${i - 1}"/>"><c:out value="${i}"/></a></li>
                         </c:forEach>
                     </c:if>
                 </ul>
@@ -218,22 +200,13 @@
 
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/photo.js"></script>
-<script src="resources/js/deleteCookedOrder.js"></script>
+<script src="resources/js/deleteViewedAdvertisement.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 <script src="resources/js/checkboxAll.js"></script>
 
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
 
 
 
