@@ -21,15 +21,21 @@ public class Dish implements Serializable {
     @Column(name = ("photo"), length = 16777215)
     private byte[] photo;
 
-    @ManyToMany(mappedBy = "dishes", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "dishes", cascade = CascadeType.ALL)
     private List<Order> order = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "cookingDishes", cascade = CascadeType.ALL)
+    private List<CookedOrder> cookedOrders = new ArrayList<>();
+    private String type;
     private String name;
     private int cost;
     private int weight;
     private int discount;
     private int duration;
 
+    public List<CookedOrder> getCookedOrders() {
+        return cookedOrders;
+    }
 
     public List<Order> getOrder() {
         return order;
@@ -41,6 +47,14 @@ public class Dish implements Serializable {
 
     public byte[] getPhoto() {
         return photo;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setPhoto(byte[] photo) {
@@ -55,20 +69,15 @@ public class Dish implements Serializable {
 
     }
 
-    public Dish(String name, int cost, int weight, byte[] photo) {
-        this.name = name;
-        this.cost = cost;
-        this.weight = weight;
-        this.photo = photo;
-    }
 
-    public Dish(byte[] photo, String name, int cost, int weight, int discount, int duration) {
+    public Dish(byte[] photo, String name, int cost, int weight, int discount, int duration, String type) {
         this.photo = photo;
         this.name = name;
         this.cost = cost;
         this.weight = weight;
         this.discount = discount;
         this.duration = duration;
+        this.type = type;
     }
 
     public Dish(String name, int cost, int weight, int duration, int discount) {
