@@ -3,13 +3,13 @@ package malov.serg.Model;
 
 
 import lombok.NoArgsConstructor;
-import malov.serg.ConsoleHelper;
 
 import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Entity
 @Table(name="orders")
@@ -21,7 +21,7 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue
     private long id;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="OrderDish",
             joinColumns={@JoinColumn(name="order_id", referencedColumnName="id")},
@@ -31,6 +31,15 @@ public class Order implements Serializable {
     @JoinColumn(name="tablet_id")
     private Tablet table;
 
+    private Boolean cooking;
+
+    public Boolean getCooking() {
+        return cooking;
+    }
+
+    public void setCooking(Boolean cooking) {
+        this.cooking = cooking;
+    }
 
     public List<Dish> getDishes()
     {
@@ -41,28 +50,25 @@ public class Order implements Serializable {
         this.dishes = dishes;
     }
 
-    public Order(Tablet tablet, List<Dish> dishes) throws IOException
+    public Order(Tablet tablet, List<Dish> dishes, Boolean cooking) throws IOException
     {
         this.table = tablet;
         this.dishes = dishes;
+        this.cooking = cooking;
         //ConsoleHelper.writeMessage(Dish.allDishesToString());
         //initDishes();
     }
 
 
-    public int getTotalCookingTime()
-    {
+    public int getTotalCookingTime() {
         int sum = 0;
-        for(Dish dish: dishes)
-        {
-            sum += dish.getDuration();
-        }
+        if (!isEmpty())
+            for (Dish dish : dishes) {
+                sum += dish.getDuration();
+            }
         return sum;
     }
-    protected void initDishes() throws IOException
-    {
-        dishes = ConsoleHelper.getAllDishesForOrder();
-    }
+
     public boolean isEmpty()
     {
         return dishes.isEmpty();
