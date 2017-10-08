@@ -15,4 +15,7 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
 
     @Query("SELECT c FROM Dish c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :pattern, '%'))")
     List<Dish> findByPattern(@Param("pattern") String pattern, Pageable pageable);
+
+    @Query("SELECT c FROM Dish c WHERE LOWER(c.type) LIKE LOWER(CONCAT('%', :pattern, '%'))")
+    List<Dish> findByType(@Param("pattern") String pattern);
 }

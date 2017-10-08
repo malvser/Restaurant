@@ -36,7 +36,10 @@ public class DishService {
     public List<Dish> findArrayId(long[] id){
         List<Dish> findId = new ArrayList<>();
         for (long i : id) {
-            findId.add(dishRepository.findOne(i));
+            if(i > 1){
+                findId.add(dishRepository.findOne(i));
+            }
+
         }
         return findId;
     }
@@ -61,6 +64,11 @@ public class DishService {
     @Transactional(readOnly = true)
     public List<Dish> findByPattern(String pattern, Pageable pageable) {
         return dishRepository.findByPattern(pattern, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Dish> findByType(String pattern) {
+        return dishRepository.findByType(pattern);
     }
 
 }
