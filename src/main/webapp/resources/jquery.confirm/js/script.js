@@ -42,10 +42,10 @@ $(document).ready(function(){
 								form.submit();
 							}
 
+							console.log("date = " + date);
+							submit('/made/order', date);
 
-							submit('/order', date);
 
-							console.log("date = " + 61);
 
 
 						}
@@ -54,7 +54,7 @@ $(document).ready(function(){
 				},
 				'Нет'	: {
 					'class'	: 'gray',
-					'action': function(){}	// Nothing to do in this case. You can as well omit the action property.
+					'action': function(){}
 				}
 			}
 		});
