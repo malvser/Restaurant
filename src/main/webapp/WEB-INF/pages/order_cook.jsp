@@ -13,40 +13,14 @@
     <link rel="shortcut icon" href="resources/img/logo.png">
     <title>Malov Serg</title>
 
-    <!-- подтверждающее окно -->
-    <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
-    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
-    <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <link href="resources/style.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
 
 </head>
 <body>
 
 
-<div class="modal fade" id="image-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">×</span></button>
-                <div class="modal-lg">Photo</div>
-            </div>
-            <div class="modal-body">
-                <img class="img-responsive center-block" src="" alt="">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -58,22 +32,30 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a id="add_contact" class="navbar-brand" href="/">Главная</a>
+            <a id="main" class="navbar-brand" href="/">Главная</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/menu">Сброс поиска</a></li>
-                <li><a href="/add_dish">Добавить блюдо</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="#">Help</a></li>
+
+
+                <li><a href="/logout">Выход</a></li>
+
             </ul>
-            <form class="navbar-form navbar-right" role="search" action="/search" method="post">
-                <div class="form-group">
-                    <input type="text" class="form-control" name="pattern" placeholder="Поиск">
+            <form class="navbar-form navbar-left" action="/advertisement/view" method="post">
+                <input hidden name="IdDishes" value="${Id}">
+                <div class="btn-group" role="group">
+                    <input type="submit" class="btn btn-info" value="Просмотреть рекламу">
                 </div>
-                <button type="submit" class="btn btn-primary">Поиск</button>
 
             </form>
+            <form class="navbar-form navbar-left" role="group" action="/search_hot_snacks">
+                <div class="btn-group" role="group">
+                    <input type="submit" class="btn btn-success" value="Сделать еще заказ">
+                </div>
+
+            </form>
+
+
 
         </div>
     </div>
@@ -82,27 +64,41 @@
 
 <div class="col">
 
-    <form action="/order" method="post">
+    <form >
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <br /> <br /> <br />
+
+                <p align="center">
+                    <font size="7" color="#6a5acd" face="Monotype Corsiva">
+                        <em> Заказ принят! Ожидайте, пожалуйста! </em></font>
+                </p>
 
                 <tr>
+                    <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Блюдо</em></font>
+                    </th>
+                    <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Вес</em></font>
+                    </th>
+                    <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Стоимость</em></font>
+                    </th>
+                    <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Скидка</em></font>
+                    </th>
+                    <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Время готовки</em></font>
+                    </th>
+                    <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Фото</em></font>
+                    </th>
 
-                    <td width="20%"><h3>Name</h3></td>
-                    <td width="20%"><h3>Weight</h3></td>
-                    <td width="20%"><h3>Cost</h3></td>
-                    <td width="20%"><h3>Discount</h3></td>
-                    <td width="10%"><h3>Duration</h3></td>
-                    <td width="30%"><h3>Photo</h3></td>
 
                 </tr>
                 </thead>
-                <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
+                <form class="form-control" enctype="multipart/form-data" >
                     <c:forEach var="item" items="${dishesArrayId}">
                         <tr>
 
@@ -128,33 +124,14 @@
     </form>
 
 
-    <form action="/menu" method="post">
-
-        <div class="btn-group" role="group">
-            <input type="submit" id="buttons-hbox2" class="btn btn-info" value="Сделать еще заказ">
-        </div>
-
-    </form>
-
-    <form action="/advertisement/view" method="post">
-
-        <div class="btn-group" role="group">
-            <input type="submit" id="buttons-hbox1" class="btn btn-info" value="Просмотреть рекламу">
-        </div>
-
-    </form>
 
 </div>
-<!-- <input type="submit" value="Back to mainpage" onclick="window.location='/';"/> -->
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
 <script src="resources/js/bootstrap.min.js"></script>
 
-<!-- подтверждающее окно  jquery -->
-<script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
-<script src="resources/jquery.confirm/js/script.js"></script>
-<script src="resources/js/photo.js"></script>
+
 
 
 </body>
