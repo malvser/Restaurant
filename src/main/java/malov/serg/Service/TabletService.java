@@ -17,21 +17,13 @@ import java.util.List;
 @ComponentScan(value = "malov.serg")
 public class TabletService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+
 
     @Autowired
     private TabletRepository tabletRepository;
 
 
 
-   @Transactional
-   public void addQueueOrder(Tablet tablet, Order order){
-
-       tablet.getQueue().add(order);
-       tabletRepository.save(tablet);
-
-   }
 
     @Transactional
     public void addTablet(Tablet tablet) {
