@@ -18,8 +18,8 @@
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
-    <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
 
     <link href="resources/style.css" rel="stylesheet">
 
@@ -63,21 +63,15 @@
                 <button class="btn btn-success" type="button" id="modal" >Сделать заказ</button>
             </form>
 
-           <!--  <button class="btn btn-info" type="button" id="modal" >Сделать заказ</button> -->
 
-               <!-- <input type="submit" id="modal" class="btn btn-success" value="Заказать"> -->
-
-
-            <!-- data-target="#myModal" -->
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/search_hot_snacks">Сброс поиска</a></li>
-                <li><a> Ваш логин: ${login}</a></li>
                 <li><a href="/logout">Выход</a></li>
             </ul>
 
-            <form class="navbar-form navbar-right" role="search" action="/search" method="post">
+            <form class="navbar-form navbar-right" role="search" action="/search_dishes" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" name="pattern" placeholder="Поиск">
                 </div>
@@ -89,19 +83,6 @@
     </div>
 </nav>
 
-<!-- window -->
-
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>
-                <h4 class="modal-title">Заголовок окна</h4>
-            </div>
-            <div class="modal-body">Текст уведомления</div>
-            <div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Закрыть</button></div>
-        </div>
-    </div>
-</div>
 
 <div class="container-fluid">
     <div class="row">
@@ -154,7 +135,7 @@
 
         <div class="col-sm-8 col-sm-offset-5 col-md-10 col-md-offset-2 main">
             <p align="center">
-                <font size="7" color="#d2691e" face="Monotype Corsiva"><em>
+                <font size="7" color="#6a5acd" face="Monotype Corsiva"><em>
                     Выберите желаемое блюдо, отметьте его и закажите </em></font>
             </p>
             <form action="/order"  method="post"> <!-- action="/order" -->
@@ -164,11 +145,21 @@
                         <tr>
                             <th></th>
 
-                            <th width="20%"><h3>Имя</h3></th>
-                            <th width="25%"><h3>Вес</h3></th>
-                            <th width="25%"><h3>Стоимость</h3></th>
-                            <th width="30%"><h3>Скидка</h3></th>
-                            <th width="30%"><h3>Фото</h3></th>
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Имя</em></font>
+                            </th>
+                            <th width="25%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Вес</em></font>
+                            </th>
+                            <th width="25%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Стоимость</em></font>
+                            </th>
+                            <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Скидка</em></font>
+                            </th>
+                            <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Фото</em></font>
+                            </th>
 
                         </tr>
                         </thead>
@@ -201,8 +192,6 @@
 
 
 
-            </form>
-            <!-- <input type="submit" value="Back to mainpage" onclick="window.location='/';"/> -->
 
         </div>
     </div>
@@ -213,7 +202,6 @@
 <script src="resources/js/photo.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
-<script src="resources/js/checkboxAll.js"></script>
 
 
 
