@@ -13,18 +13,9 @@
     <link rel="shortcut icon" href="resources/img/logo.png">
     <title>Malov Serg</title>
 
-    <!-- подтверждающее окно -->
-    <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
-    <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
-    <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <link href="resources/style.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
 
 </head>
 <body>
@@ -40,27 +31,32 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a id="add_contact" class="navbar-brand" href="/">Главная</a>
+                <a id="main" class="navbar-brand" href="/">Главная</a>
+                <a id="order" class="navbar-brand" href="/search_hot_snacks">Сделать заказ</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
+
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/menu">Сброс поиска</a></li>
-                    <li><a href="/add_dish">Добавить блюдо</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Help</a></li>
+
+
+                    <li><a href="/logout">Выход</a></li>
+
                 </ul>
-                <form class="navbar-form navbar-right" action="/advertisement/view/${photo_id}" method="post">
 
 
-                    <button type="submit"  class="btn btn-primary">Следующая</button>
+
+                <form class="navbar-form navbar-left" role="search" action="/advertisement/viewed/${photo_id}" method="post">
+
+
+                    <button type="submit" class="btn btn-primary">Предыдущая реклама</button>
+                </form>
+                <form class="navbar-form navbar-left" action="/advertisement/view/${photo_id}" method="post">
+
+
+                    <button type="submit"  class="btn btn-primary">Следующая реклама</button>
 
                 </form>
 
-                <form class="navbar-form navbar-right" role="search" action="/menu" method="post">
-
-
-                    <button type="submit" class="btn btn-primary">Предыдущая</button>
-                </form>
 
             </div>
         </div>

@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <title>New Dish</title>
+    <title>Новая реклама</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </head>
@@ -15,12 +15,12 @@
         <h3>Новая реклама</h3>
 
         <input class="form-control form-group" type="text" name="name" placeholder="Имя">
-        <input class="form-control form-group" type="text" name="initialAmount" placeholder="Стоимость">
+        <input class="form-control form-group" type="text" name="cost" placeholder="Стоимость">
         <input class="form-control form-group" type="text" name="amount" placeholder="Оставшееся количество оплаченных показов">
         <input class="form-control form-group" type="text" name="total_amount" placeholder="Общее количество оплаченных показов">
         <input type="file" name="photo">
         <p></p>
-        <input type="submit" class="btn btn-primary" value="Add">
+        <input type="submit" class="btn btn-primary" value="Добавить">
     </form>
 </div>
 

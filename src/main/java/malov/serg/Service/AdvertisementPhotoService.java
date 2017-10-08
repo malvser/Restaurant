@@ -77,9 +77,16 @@ public class AdvertisementPhotoService {
         return advertisementPhotoRepository.findByPattern(pattern, pageable);
     }
 
+    @Transactional(readOnly = true)
+    public AdvertisementPhoto findOne(long id){
+        return advertisementPhotoRepository.findOne(id);
+    }
+
     @Transactional
     public void deleteAdvertisement(long[] idList) {
         for (long id : idList)
             advertisementPhotoRepository.delete(id);
     }
+
+
 }
