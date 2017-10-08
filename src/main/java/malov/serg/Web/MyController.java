@@ -35,8 +35,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Controller
 public class MyController {
 
-    static final int ITEMS_PER_PAGE = 4;
+    static final int ITEMS_PER_PAGE_ADVERTISEMENT = 6;
     static final int ITEMS_PER_PAGE_TABLET = 8;
+    static final int ITEMS_PER_PAGE_COOK = 10;
+    static final int ITEMS_PER_PAGE_DISH = 6;
+    static final int ITEMS_PER_PAGE_NO_ADVERTISEMENT = 6;
+    static final int ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT = 6;
+    static final int ITEMS_PER_PAGE_COOKED_ORDERS = 3;
+    static final int ITEMS_PER_PAGE_COUNT_ORDERS = 3;
+
 
     @Autowired
     private DishService dishService;
@@ -141,39 +148,72 @@ public class MyController {
         return "index";
     }
 
-    /*@RequestMapping("/login")
-    public String login() {
-        return "login";
-    }*/
+
 
     @RequestMapping("/enter_cook")
     public String indexCook(Model model) {
 
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
+        int count_order = 0;
+        int count_cooking_order = 0;
+        int totalCookingTime = 0;
+        int totalCookingTimeNewOrder = 0;
+        int countDishesNewOrder = 0;
+        int countDishesCookingOrder = 0;
+        List<Order> orders = orderService.findAll();
+        for (Order order : orders) {
+            if(!order.getCooking()){
+                count_order += 1;
+                totalCookingTimeNewOrder += order.getTotalCookingTime();
+                countDishesNewOrder += order.getDishes().size();
+
+            }else{
+                count_cooking_order += 1;
+                totalCookingTime += order.getTotalCookingTime();
+                countDishesCookingOrder += order.getDishes().size();
+            }
+
+        }
+
         model.addAttribute("login", login);
+        model.addAttribute("count_order", count_order);
+        model.addAttribute("count_cooking_order", count_cooking_order);
+        model.addAttribute("totalCookingTimeNewOrder", totalCookingTimeNewOrder);
+        model.addAttribute("totalCookingTime", totalCookingTime);
+        model.addAttribute("countDishesNewOrder", countDishesNewOrder);
+        model.addAttribute("countDishesCookingOrder", countDishesCookingOrder);
         return "index_cook";
     }
 
 
 
 
-    @RequestMapping("/menu")
-    public String index(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
 
+    @RequestMapping("/dishesList")
+    public String dishList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
         if (page < 0) page = 0;
 
         List<Dish> dishes = dishService
-                .findAll(new PageRequest(page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
-
-
+                .findAll(new PageRequest(page, ITEMS_PER_PAGE_DISH, Sort.Direction.DESC, "id"));
+        model.addAttribute("login", login);
         model.addAttribute("allPages", page);
-
         model.addAttribute("dishes", dishes);
         model.addAttribute("allPages", getPageCountDish());
 
-        return "main";
+        return "dishesList";
     }
+
+    @RequestMapping(value = "/dishes/delete", method = RequestMethod.POST)
+    public ResponseEntity<Void> deleteDishes(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0)
+            dishService.deleteDishes(toDelete);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 
     @RequestMapping("/add_dish")
@@ -191,12 +231,12 @@ public class MyController {
                           @RequestParam int cost,
                           @RequestParam int weight,
                           @RequestParam int discount,
-                          @RequestParam int duration
-    ) {
+                          @RequestParam int duration,
+                          @RequestParam String type) {
 
 
         try {
-            Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration);
+            Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type);
             dishService.addDish(dish);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -204,19 +244,149 @@ public class MyController {
         }
 
 
-        return "redirect:/menu";
+        return "redirect:/search_hot_snacks";
+    }
+
+
+    //Search
+
+    @RequestMapping(value = "/search_dishes", method = RequestMethod.POST)
+    public String search(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("dishes", dishService.findByPattern(pattern, null));
+
+        return "dishesList";
+    }
+
+
+    @RequestMapping(value = "/search_advertisement", method = RequestMethod.POST)
+    public String searchAdvertisement(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("advertisement", advertisementPhotoService.findByPattern(pattern, null));
+        return "advertisementList";
+    }
+
+    @RequestMapping(value = "/search_no_advertisement", method = RequestMethod.POST)
+    public String searchNoAdvertisement(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("noAdvertisements",noAdvertisementService.findByPattern(pattern, null));
+        return "statistics_no_advertisement";
+    }
+
+    @RequestMapping(value = "/search_viewed_advertisement", method = RequestMethod.POST)
+    public String searchViewedAdvertisement(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("viewedAdvertisements",viewedAdvertisementService.findByPattern(pattern, null));
+        return "statistics_viewed_advertisement";
+    }
+
+    @RequestMapping(value = "/search_cook", method = RequestMethod.POST)
+    public String searchCook(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("cook", cookService.findByPattern(pattern, null));
+        return "cookList";
+    }
+
+    @RequestMapping(value = "/search_cooked_order", method = RequestMethod.POST)
+    public String searchCookedOrder(@RequestParam String pattern, Model model) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        model.addAttribute("cookedOrderList", cookedOrderService.findByPattern(pattern, null));
+
+        return "statistics_cooked_order";
     }
 
 
 
+    @RequestMapping("/search_hot_snacks")
+    public String searchHotSnacks(Model model) {
+        String pattern = "Горячии закуски";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public String search(@RequestParam String pattern, Model model) {
-        model.addAttribute("dishes", dishService.findByPattern(pattern, null));
 
         return "main";
     }
 
+    @RequestMapping("/search_cold_snacks")
+    public String searchColdSnacks(Model model) {
+        String pattern = "Холодные закуски";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+    @RequestMapping("/search_all")
+    public String searchAll(Model model) {
+        String pattern = "Все блюда";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+    @RequestMapping("/search_salads")
+    public String searchSalads(Model model) {
+        String pattern = "Салаты";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+    @RequestMapping("/search_first_meal")
+    public String searchFirstMeal(Model model) {
+        String pattern = "Первые блюда";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+
+
+    @RequestMapping("/search_garnishes")
+    public String searchGarnishes(Model model) {
+        String pattern = "Гарниры";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+    @RequestMapping("/search_supe")
+    public String searchSupe(Model model) {
+        String pattern = "Супы";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+
+    @RequestMapping("/search_beverages")
+    public String searchBeverages(Model model) {
+        String pattern = "Напитки";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+
+
+    @RequestMapping("/search_alcoholic_beverages")
+    public String searchAlcoholicBeverages(Model model) {
+        String pattern = "Алкогольные напитки";
+        model.addAttribute("dishes", dishService.findByType(pattern));
+        model.addAttribute("pattern", pattern);
+        return "main";
+    }
+    //.....
 
     @RequestMapping("/photo/{photo_id}")
     public void getPhotoDish(HttpServletRequest request, HttpServletResponse response, @PathVariable("photo_id") long fileId) {
@@ -251,12 +421,15 @@ public class MyController {
     public String tabletList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
         if (page < 0) page = 0;
 
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+
         List<Tablet> tablets = tabletService
                 .findAll(new PageRequest(page, ITEMS_PER_PAGE_TABLET, Sort.Direction.DESC, "id"));
 
 
         model.addAttribute("allPages", page);
-
+        model.addAttribute("login", login);
         model.addAttribute("tablets", tablets);
         model.addAttribute("allPages", getPageCountTablet());
 
@@ -293,20 +466,24 @@ public class MyController {
 
     @RequestMapping("/cookList")
     public String cookList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+
         if (page < 0) page = 0;
 
         List<Cook> cookList = cookService
-                .findAll(new PageRequest(page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
+                .findAll(new PageRequest(page, ITEMS_PER_PAGE_COOK, Sort.Direction.DESC, "id"));
 
         model.addAttribute("allPages", page);
         model.addAttribute("cook", cookList);
         model.addAttribute("allPages", getPageCountCook());
+        model.addAttribute("login", login);
 
         return "cookList";
     }
 
     @RequestMapping("/order_for_cooks")
-    public String orderForCooks(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
+    public String orderForCooks(Model model){
 
         List<Order> orderList = orderService.findAll();
         Order order = null;
@@ -325,16 +502,45 @@ public class MyController {
             model.addAttribute("numberTable", order.getTablet().getNumber());
             model.addAttribute("orderId", order.getId());
         }
-        model.addAttribute("allPages", page);
-        model.addAttribute("allPages", getPageCountOrders());
+
 
         return "order_for_cooks";
     }
 
     @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
-    public String cookedOrder(@RequestParam(value = "order_id") long order_id){
+    public ResponseEntity<Void> cookedOrder(@RequestParam(value = "date") Long id){
+       /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        */
+
+            Order order = orderService.findOne(id);
+            long[] id_dish = new long[order.getDishes().size()];
+            int i = 0;
+            for (Dish dish : order.getDishes()) {
+                id_dish[i] = dish.getId();
+                i++;
+            }
+
+            List<Cook> cooks = cookService.findAll();
+            //переделать с рандом на конкрет. повара
+            int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
+            CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
+                    cooks.get(random), dishService.findArrayId(id_dish), order.getTotalCookingTime());
+
+            cookedOrderService.addCookedOrder(cookedOrder);
+            orderService.deleteOrder(id);
+
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/cooked_order_exit", method = RequestMethod.POST)
+    public String cookedOrderExit(@RequestParam(value = "order_id") long order_id){
+       /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        */
+
         Order order = orderService.findOne(order_id);
-        Date date = new Date();
         long[] id = new long[order.getDishes().size()];
         int i = 0;
         for (Dish dish : order.getDishes()) {
@@ -346,53 +552,49 @@ public class MyController {
         //переделать с рандом на конкрет. повара
         int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
         CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
-                cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime(),date);
-//        StatisticManager.getInstance().register(cookedOrder);
+                cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime());
+
         cookedOrderService.addCookedOrder(cookedOrder);
         orderService.deleteOrder(order_id);
 
-        return "redirect:/order_for_cooks";
+        return "/enter_cook";
     }
 
     @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
-    public String deleteCook(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+    public ResponseEntity<Void> deleteCook(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
         if (toDelete != null && toDelete.length > 0)
             cookService.deleteCookes(toDelete);
-        return "cookList";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
 
     //...OrderController
 
-    @RequestMapping(value = "/order", method = RequestMethod.POST)
-    public String order(Model model, @RequestParam(value = "id") long[] id) {
 
-        model.addAttribute("dishesArrayId", dishService.findArrayId(id));
-        return "order";
-
-    }
 
 
     @RequestMapping(value = "/made/order", method = RequestMethod.POST)
-    public String orderCook(Model model, @RequestParam(value = "id") long[] id) {
+    public String orderCook(Model model, @RequestParam(value = "toOrder[]") long[] id) {
 
             List<Tablet> tablet = tabletService.findAll();
             int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
             Order order = null;
-
+            List<Dish> dishList = dishService.findArrayId(id);
             try {
-                order = new Order(tablet.get(random), dishService.findArrayId(id), false);
+                order = new Order(tablet.get(random), dishList, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             orderService.addOrder(order);
-            orderService.addOrder(order);
+
         String s = "";
         for (long i : id ) {
             s += "" + i + " ";
         }
 
-            model.addAttribute("dishesArrayId", dishService.findArrayId(id));
+            model.addAttribute("dishesArrayId", dishList);
             model.addAttribute("Id", s);
             return "order_cook";
     }
@@ -404,12 +606,16 @@ public class MyController {
 
     @RequestMapping("/advertisementList")
     public String advertisementList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+
+
         if (page < 0) page = 0;
 
         List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService
-                .findAll(new PageRequest(page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
+                .findAll(new PageRequest(page, ITEMS_PER_PAGE_ADVERTISEMENT, Sort.Direction.DESC, "id"));
 
-
+        model.addAttribute("login", login);
         model.addAttribute("allPages", page);
         model.addAttribute("advertisement", advertisementPhotos);
         model.addAttribute("allPages", getPageCountAdvertisement());
@@ -418,7 +624,7 @@ public class MyController {
     }
 
 
-    @RequestMapping(value = "/advertisement/view")
+    @RequestMapping(value = "/advertisement/view", method = RequestMethod.POST)
     public String onView(Model model, @RequestParam("IdDishes") String idDishes) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
@@ -442,7 +648,7 @@ public class MyController {
             for (int i = 0; i < array.length; i++) {
                 arrayId[i] = Long.parseLong(array[i]);
             }
-               // System.out.println("idDishes = " + idDishes);
+
 
             List<Dish> dishes = dishService.findArrayId(arrayId);
             long sumDuration = 0;
@@ -559,7 +765,9 @@ public class MyController {
                           @RequestParam long amount,
                           @RequestParam long total_amount) {
 
-
+        if(name == null || body_photo == null || cost == 0 || amount == 0 || total_amount == 0){
+            return "redirect:/advertisementList";
+        }
         try {
             AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
                     cost, amount, total_amount);
@@ -581,53 +789,94 @@ public class MyController {
 
 
     @RequestMapping(value = "/advertisement/delete", method = RequestMethod.POST)
-    public ResponseEntity<Void> deleteAdvertisement(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
-        if (toDelete != null && toDelete.length > 0)
+    public String deleteAdvertisement(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0) {
             advertisementPhotoService.deleteAdvertisement(toDelete);
+        }
+
+        return "redirect:/advertisementList";
+    }
+
+    //StatisticController
+
+    @RequestMapping("/statistic_cooked_order")
+    public String statisticCookedOrder(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        List<CookedOrder> cookedOrderList = cookedOrderService.findAll(new PageRequest
+                (page, ITEMS_PER_PAGE_COOKED_ORDERS, Sort.Direction.DESC, "id"));
+
+        model.addAttribute("cookedOrderList", cookedOrderList);
+        model.addAttribute("login", login);
+        model.addAttribute("allPages", page);
+        model.addAttribute("allPages", getPageCookedOrders());
+
+        return "statistics_cooked_order";
+    }
+
+    @RequestMapping(value = "/cooked_order/delete", method = RequestMethod.POST)
+    public ResponseEntity<Void> deleteCookedOrder(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0)
+            cookedOrderService.deleteCookedOrder(toDelete);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @RequestMapping("/statistic_viewed_advertisement")
+    public String statisticViewedAdvertisement(Model model,@RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        if (page < 0) page = 0;
+
+
+        List<ViewedAdvertisement> viewedAdvertisements = viewedAdvertisementService.findAll(new PageRequest(page, ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT, Sort.Direction.DESC, "id"));
+        model.addAttribute("viewedAdvertisements", viewedAdvertisements);
+        model.addAttribute("login", login);
+        model.addAttribute("allPages", page);
+        model.addAttribute("allPages", getPageCountViewedAdvertisement());
+        return "statistics_viewed_advertisement";
+    }
+
+    @RequestMapping(value = "/viewed_advertisement/delete", method = RequestMethod.POST)
+    public ResponseEntity<Void> deleteViewedAdvertisement(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0)
+            viewedAdvertisementService.deleteViewedAdvertisement(toDelete);
 
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //StatisticController
 
-    @RequestMapping("/statistic/cooked_order")
-    public String statisticCookedOrder(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
-
-        List<CookedOrder> cookedOrderList = cookedOrderService.findAll(new PageRequest
-                (page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
-
-        model.addAttribute("cookedOrderList", cookedOrderList);
-        //model.addAttribute("cookedOrderList", cookedOrderList);
-
-
-
-        model.addAttribute("allPages", page);
-        model.addAttribute("allPages", getPageCountOrders());
-
-        return "statistics_cooked_order";
-    }
-
-
-    @RequestMapping("/statistic/viewed_advertisement")
-    public String statisticViewedAdvertisement(Model model){
-
-        List<ViewedAdvertisement> viewedAdvertisements = viewedAdvertisementService.findAll();
-        model.addAttribute("viewedAdvertisements", viewedAdvertisements);
-        return "statistics_viewed_advertisement";
-    }
-
-    @RequestMapping("/statistic/no_advertisement")
-    public String statisticNoAdvertisement(Model model){
-
-        List<NoAdvertisement> noAdvertisements = noAdvertisementService.findAll();
+    @RequestMapping("/statistic_no_advertisement")
+    public String statisticNoAdvertisement(Model model,@RequestParam(required = false, defaultValue = "0") Integer page){
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        if (page < 0) page = 0;
+        List<NoAdvertisement> noAdvertisements = noAdvertisementService.findAll(new PageRequest(page, ITEMS_PER_PAGE_NO_ADVERTISEMENT, Sort.Direction.DESC, "id"));
         model.addAttribute("noAdvertisements", noAdvertisements);
+        model.addAttribute("login", login);
+        model.addAttribute("allPages", page);
+        model.addAttribute("allPages", getPageCountNoAdvertisement());
         return "statistics_no_advertisement";
     }
 
-    @RequestMapping("/director/pages")
-    public String statisticForDirector(){
-        return "director_page";
+    @RequestMapping(value = "/no_advertisement/delete", method = RequestMethod.POST)
+    public ResponseEntity<Void> deleteNoAdvertisement(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0) {
+            noAdvertisementService.deleteNoAdvertisement(toDelete);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @RequestMapping("/admin")
+    public String statisticForAdmin(Model model){
+
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        return "admin";
     }
 
 
@@ -656,17 +905,22 @@ public class MyController {
 
     private long getPageCountAdvertisement() {
         long totalCount = advertisementPhotoService.count();
-        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+        return (totalCount / ITEMS_PER_PAGE_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_ADVERTISEMENT > 0) ? 1 : 0);
+    }
+
+    private long getPageCookedOrders() {
+        long totalCount = cookedOrderService.count();
+        return (totalCount / ITEMS_PER_PAGE_COOKED_ORDERS) + ((totalCount % ITEMS_PER_PAGE_COOKED_ORDERS > 0) ? 1 : 0);
     }
 
     private long getPageCountOrders() {
         long totalCount = orderService.count();
-        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+        return (totalCount / ITEMS_PER_PAGE_COUNT_ORDERS) + ((totalCount % ITEMS_PER_PAGE_COUNT_ORDERS > 0) ? 1 : 0);
     }
 
     private long getPageCountCook() {
         long totalCount = cookService.count();
-        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+        return (totalCount / ITEMS_PER_PAGE_COOK) + ((totalCount % ITEMS_PER_PAGE_COOK > 0) ? 1 : 0);
     }
 
     private void responsePhoto(HttpServletResponse response, byte[] content) throws IOException {
@@ -677,8 +931,21 @@ public class MyController {
 
     private long getPageCountDish() {
         long totalCount = dishService.count();
-        return (totalCount / ITEMS_PER_PAGE) + ((totalCount % ITEMS_PER_PAGE > 0) ? 1 : 0);
+        return (totalCount / ITEMS_PER_PAGE_DISH) + ((totalCount % ITEMS_PER_PAGE_DISH > 0) ? 1 : 0);
     }
+
+    private long getPageCountViewedAdvertisement() {
+        long totalCount = viewedAdvertisementService.count();
+        return (totalCount / ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT  > 0) ? 1 : 0);
+
+    }
+    private long getPageCountNoAdvertisement() {
+        long totalCount = noAdvertisementService.count();
+        return (totalCount / ITEMS_PER_PAGE_NO_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_NO_ADVERTISEMENT > 0) ? 1 : 0);
+
+    }
+
+
 
     private long getPageCountTablet() {
         long totalCount = tabletService.count();

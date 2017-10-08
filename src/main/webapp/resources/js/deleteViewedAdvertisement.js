@@ -5,8 +5,8 @@ $(document).ready(function(){
     $('#modal').click(function(){
 
         $.confirm({
-            'title'		: 'Подтверждение удаления рекламы',
-            'message'	: 'Чтобы выбрать рекламу для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить рекламу?',
+            'title'		: 'Подтверждение удаления записи о показаной рекламе',
+            'message'	: 'Чтобы выбрать запись(и) для удаления, необходимо отметить их галачкой. Вы уверены, что хотите удалить запись(и)?',
             'buttons'	: {
                 'Да'	: {
                     'class'	: 'blue',
@@ -19,8 +19,8 @@ $(document).ready(function(){
                                 date['toDelete[]'].push($(this).val());
                             });
 
-                            $.post("/advertisement/delete", date, function(data, status) {
-                                window.location.href = "/advertisementList";
+                            $.post("/viewed_advertisement/delete", date, function(data, status) {
+                                window.location.href = "/statistic_viewed_advertisement";
                             });
 
 

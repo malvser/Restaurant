@@ -2,11 +2,11 @@ $(document).ready(function(){
 
 
 
-    $('#modal').click(function(){
+    $('#modal_dish').click(function(){
 
         $.confirm({
-            'title'		: 'Подтверждение удаления рекламы',
-            'message'	: 'Чтобы выбрать рекламу для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить рекламу?',
+            'title'		: 'Подтверждение удаления блюд',
+            'message'	: 'Чтобы выбрать блюдо для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить блюдо(а)?',
             'buttons'	: {
                 'Да'	: {
                     'class'	: 'blue',
@@ -18,9 +18,9 @@ $(document).ready(function(){
                             $(":checked").each(function () {
                                 date['toDelete[]'].push($(this).val());
                             });
-
-                            $.post("/advertisement/delete", date, function(data, status) {
-                                window.location.href = "/advertisementList";
+                            console.log("data = " + date);
+                            $.post("/dishes/delete", date, function(data, status) {
+                                window.location.href = "/dishesList";
                             });
 
 

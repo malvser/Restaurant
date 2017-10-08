@@ -1,9 +1,52 @@
-$('#delete_tablet').click(function(){
-    var data = { 'toDelete[]' : []};
-    $(":checked").each(function() {
-        data['toDelete[]'].push($(this).val());
+$(document).ready(function(){
+
+
+
+    $('#modal').click(function(){
+
+        $.confirm({
+            'title'		: 'Подтверждение удаления столов',
+            'message'	: 'Чтобы выбрать стол(ы) для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить стол(ы)?',
+            'buttons'	: {
+                'Да'	: {
+                    'class'	: 'blue',
+                    'action': function(){
+
+                        if($('[type="checkbox"]').is(':checked')) {
+
+                            var date = {'toDelete[]': []};
+                            $(":checked").each(function () {
+                                date['toDelete[]'].push($(this).val());
+                            });
+
+                            $.post("/tablet/delete", date, function(data, status) {
+                                window.location.href = "/tabletList";
+                            });
+
+
+                        }
+
+                    }
+                },
+                'Нет'	: {
+                    'class'	: 'gray',
+                    'action': function(){}
+                }
+            }
+        });
+
     });
-    $.post("/tablet/delete", data, function(data, status) {
-        window.location.href = "/tabletList";
-    });
+
 });
+
+
+
+
+
+
+
+
+
+
+
+

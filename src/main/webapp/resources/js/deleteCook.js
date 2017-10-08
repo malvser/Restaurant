@@ -5,8 +5,8 @@ $(document).ready(function(){
     $('#modal').click(function(){
 
         $.confirm({
-            'title'		: 'Подтверждение удаления рекламы',
-            'message'	: 'Чтобы выбрать рекламу для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить рекламу?',
+            'title'		: 'Подтверждение удаления повара(ов)',
+            'message'	: 'Чтобы выбрать повара для удаления, необходимо отметить его галачкой. Вы уверены, что хотите удалить повара(ов)?',
             'buttons'	: {
                 'Да'	: {
                     'class'	: 'blue',
@@ -19,8 +19,8 @@ $(document).ready(function(){
                                 date['toDelete[]'].push($(this).val());
                             });
 
-                            $.post("/advertisement/delete", date, function(data, status) {
-                                window.location.href = "/advertisementList";
+                            $.post("/cook/delete", date, function(data, status) {
+                                window.location.href = "/cookList";
                             });
 
 
@@ -38,4 +38,5 @@ $(document).ready(function(){
     });
 
 });
+
 
