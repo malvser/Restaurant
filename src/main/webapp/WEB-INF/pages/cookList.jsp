@@ -11,20 +11,20 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
+
     <title>Malov Serg</title>
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/css/styles.css" /> -->
     <link rel="stylesheet" type="text/css" href="resources/jquery.confirm/jquery.confirm/jquery.confirm.css"/>
 
-    <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
 
     <link href="resources/style.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+
 
 </head>
 <body>
@@ -40,18 +40,20 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a id="add_contact" class="navbar-brand" href="/">Главная</a>
+            <a id="main" class="navbar-brand" href="/">Главная</a>
+
+
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/menu">Сброс поиска</a></li>
-                <li><a href="/add_dish">Добавить блюдо</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="#">Help</a></li>
+                <li><a href="/cookList">Сброс поиска</a></li>
+                <li> <a>Ваш логин: ${login}</a></li>
+                <li><a href="/logout">Выход</a></li>
             </ul>
-            <form class="navbar-form navbar-right" role="search" action="/search" method="post">
+
+            <form class="navbar-form navbar-right" role="search" action="/search_cook" method="post">
                 <div class="form-group">
-                    <input type="text" class="form-control" name="pattern" placeholder="Поиск">
+                    <input type="text" class="form-control" name="pattern" placeholder="Имя повара">
                 </div>
                 <button type="submit" class="btn btn-primary">Поиск</button>
 
@@ -62,45 +64,52 @@
 </nav>
 
 
-<div class="container-fluid">
+<div class="container-fluid" >
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
+
+
             <ul class="nav nav-sidebar">
-                <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                <li><a href="/">Home</a></li>
-                <li><a href="#">Analytics</a></li>
-                <li><a href="#">Export</a></li>
+
+                <li><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
+                <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
+                <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
+                <li><a href="/advertisement/add_page"><b>Добавить рекламу</b></a></li>
+                <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
+                <li><a href="/cook_add"><b>Добавить повара</b></a></li>
+                <li class="active"><a href="/cookList"><b>Список поваров</b></a></li>
+                <li><a href="/add_tablet"><b>Добавить стол</b></a></li>
+                <li><a href="/tabletList"><b>Список столов</b></a></li>
+                <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
+                <li><a href="/dishesList"><b>Список блюд</b></a></li>
+
             </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="">Nav item</a></li>
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
-                <li><a href="">More navigation</a></li>
-            </ul>
+
+
 
         </div>
 
 
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <form action="/cook/delete" method="post">
+        <div class="col-sm-8 col-sm-offset-5 col-md-10 col-md-offset-2 main">
+
+            <form action="/admin/cook/delete"  method="post">
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th width="10%" align="right">
-                                <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                    <div class="btn-group" role="group">
-                                        <input type="submit" id="buttons-hbox" class="btn btn-success" value="Delete">
-                                    </div>
-                                </div>
+                                <button class="btn btn-danger" type="button" id="modal" >Удалить</button>
+
                             </th>
-                            <td width="60%"><h3>Name</h3></td>
-                            <td width="60%"><h3>queueOrders</h3></td>
+
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Имя</em></font>
+                            </th>
+
 
                         </tr>
                         </thead>
-                        <form class="form-control" >
+                        <form class="form-control" action="/cook/delete"  method="post" >
                             <c:forEach var="item" items="${cook}">
                                 <tr>
                                     <td><input type="checkbox" align="center" name="toDelete[]" value="${item.id}"/>
@@ -108,10 +117,6 @@
                                     <td><c:out value="${item.name}"/>
                                     </td>
 
-                                <c:forEach var="item2" items="${item.queueOrders}">
-                                    <td><c:out value="${item2.peek()}"/>
-                                    </td>
-                                </c:forEach>
                                 </tr>
                             </c:forEach>
                         </form>
@@ -131,21 +136,16 @@
 
 
             </form>
-            <!-- <input type="submit" value="Back to mainpage" onclick="window.location='/';"/> -->
+
 
         </div>
     </div>
-
-
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
 <script src="resources/js/bootstrap.min.js"></script>
-
-<!-- подтверждающее окно  jquery -->
+<script src="resources/js/deleteCook.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
-<script src="resources/jquery.confirm/js/script.js"></script>
-
-
 
 </body>
 </html>

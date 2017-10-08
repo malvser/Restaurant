@@ -16,7 +16,7 @@
 
         <input class="form-control form-group" type="text" name="name" placeholder="Имя повара">
         <p></p>
-        <input type="submit" class="btn btn-primary" value="Add">
+        <input type="submit" class="btn btn-primary" value="Добавить">
     </form>
 </div>
 

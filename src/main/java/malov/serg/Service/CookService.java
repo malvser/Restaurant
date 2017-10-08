@@ -38,6 +38,16 @@ public class CookService {
         return cookRepository.findAll(pageable).getContent();
     }
 
+    @Transactional(readOnly = true)
+    public List<Cook> findAll() {
+        return cookRepository.findAll();
+    }
+
+
+    @Transactional(readOnly = true)
+    public Cook findOne(Long id) {
+        return cookRepository.findOne(id);
+    }
 
     @Transactional(readOnly = true)
     public long count() {
