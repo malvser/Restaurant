@@ -14,23 +14,9 @@
     <link rel="shortcut icon" href="resources/img/logo.png">
     <title>Malov Serg</title>
 
-    <!-- <link rel='stylesheet' href='resources/css/bootstrap.min.css' type='text/css' media='all'> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
 
-    <!-- Custom styles for this template -->
-    <link href="signin.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]>
-    <script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 </head>
 <body>
 
@@ -45,26 +31,29 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/add_dish ">Project name</a>
+            <a class="navbar-brand" href="/name">"Название ресторана"</a>
+            <a class="navbar-brand" href="/admin">Админ</a>
+            <a class="navbar-brand" href="/enter_cook">Повар</a>
+            <a class="navbar-brand" href="/">Клиент</a>
+
+
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <form class="navbar-form navbar-right">
-                <div class="form-group">
-                    <input type="text" placeholder="Email" class="form-control">
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Sign in</button>
-                <button type="submit" class="btn btn-primary">Sign up</button>
-            </form>
-        </div><!--/.navbar-collapse -->
+            <ul class="nav navbar-nav navbar-right">
+                <li> <a>Ваш логин: ${login}</a></li>
+                <li><a href="/logout">Выйти</a></li>
+            </ul>
+
+        </div>
+
     </div>
 </nav>
 
 <div class="jumbotron">
     <div class="container">
+
         <form class="form-signin">
+
             <h1>Hello, world!</h1>
             <p>This is a template for a simple marketing or informational website. It includes a large callout called a
                 jumbotron and three supporting pieces of content. Use it as a starting point to create something more
@@ -75,11 +64,12 @@
             <p>This is a template for a simple marketing or informational website. It includes a large callout called a
                 jumbotron and three supporting pieces of content. Use it as a starting point to create something more
                 unique.</p>
-            <p><a class="btn btn-primary btn-lg" href="/menu" role="button">MENU</a></p>
+            <p><a class="btn btn-primary btn-lg" href="/search_hot_snacks" role="button">Меню</a></p>
         </form>
     </div>
+
 </div>
-<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
 
 
 </body>
