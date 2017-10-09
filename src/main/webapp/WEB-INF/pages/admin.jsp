@@ -68,6 +68,7 @@
                 <li><a href="/tabletList"><b>Список столов</b></a></li>
                 <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
                 <li><a href="/dishesList"><b>Список блюд</b></a></li>
+                <li><a href="/register_admin"><b>Создать пользователя</b></a></li>
 
             </ul>
 

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,12 +89,19 @@ public class MyController {
         return "register";
     }
 
+    @RequestMapping("/register_admin")
+    public String registerCook(Model model) {
+        model.addAttribute("userRole", UserRole.values());
+
+        return "register_for_admin";
+    }
+
 
     @RequestMapping(value = "/newuser", method = RequestMethod.POST)
-    public String update(@RequestParam String login,
+    public String newUser(@RequestParam String login,
                          @RequestParam String password,
-                         @RequestParam(required = false) String email,
-                         @RequestParam(required = false) String phone,
+                         @RequestParam String email,
+                         @RequestParam String phone,
                          Model model) {
         if (userService.existsByLogin(login)) {
             model.addAttribute("exists", true);
@@ -104,6 +112,37 @@ public class MyController {
         String passHash = encoder.encodePassword(password, null);
 
         CustomUser dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
+        userService.addUser(dbUser);
+
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/newanyuser", method = RequestMethod.POST)
+    public String newCook(@RequestParam String login,
+                         @RequestParam String password,
+                         @RequestParam(value = "role") String role,
+                         @RequestParam String email,
+                         @RequestParam String phone,
+                         Model model) {
+        if (userService.existsByLogin(login)) {
+            model.addAttribute("exists", true);
+            return "register_for_admin";
+        }
+
+        ShaPasswordEncoder encoder = new ShaPasswordEncoder();
+        /*BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String passwordHash = bCryptPasswordEncoder.encode(password);*/
+        String passHash = encoder.encodePassword(password, null);
+        CustomUser dbUser;
+
+        if(("ROLE_" + role).equals(UserRole.ADMIN.toString())){
+             dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone);
+        }else if(("ROLE_" + role).equals(UserRole.COOK.toString())){
+            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone);
+        }else{
+            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
+        }
+
         userService.addUser(dbUser);
 
         return "redirect:/";
@@ -121,7 +160,7 @@ public class MyController {
 
         userService.updateUser(dbUser);
 
-        return "redirect:/menu";
+        return "redirect:/";
     }
 
     @RequestMapping("/name")
@@ -508,10 +547,11 @@ public class MyController {
     }
 
     @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
-    public ResponseEntity<Void> cookedOrder(@RequestParam(value = "date") Long id){
+    public String cookedOrder(@RequestParam(value = "id") long id){
        /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         */
+        if (id > 0) {
 
             Order order = orderService.findOne(id);
             long[] id_dish = new long[order.getDishes().size()];
@@ -529,35 +569,35 @@ public class MyController {
 
             cookedOrderService.addCookedOrder(cookedOrder);
             orderService.deleteOrder(id);
+        }
+            return "redirect:/order_for_cooks";
 
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/cooked_order_exit", method = RequestMethod.POST)
-    public String cookedOrderExit(@RequestParam(value = "order_id") long order_id){
+    public String cookedOrderExit(@RequestParam long order_id){
        /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         */
+        if (order_id > 0) {
+            Order order = orderService.findOne(order_id);
+            long[] id = new long[order.getDishes().size()];
+            int i = 0;
+            for (Dish dish : order.getDishes()) {
+                id[i] = dish.getId();
+                i++;
+            }
 
-        Order order = orderService.findOne(order_id);
-        long[] id = new long[order.getDishes().size()];
-        int i = 0;
-        for (Dish dish : order.getDishes()) {
-            id[i] = dish.getId();
-            i++;
+            List<Cook> cooks = cookService.findAll();
+            //переделать с рандом на конкрет. повара
+            int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
+            CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
+                    cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime());
+
+            cookedOrderService.addCookedOrder(cookedOrder);
+            orderService.deleteOrder(order_id);
         }
-
-        List <Cook> cooks = cookService.findAll();
-        //переделать с рандом на конкрет. повара
-        int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
-        CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
-                cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime());
-
-        cookedOrderService.addCookedOrder(cookedOrder);
-        orderService.deleteOrder(order_id);
-
-        return "/enter_cook";
+        return "redirect:/enter_cook";
     }
 
     @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
@@ -871,12 +911,21 @@ public class MyController {
 
 
     @RequestMapping("/admin")
-    public String statisticForAdmin(Model model){
+    public String Admin(Model model){
 
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         return "admin";
+    }
+
+    @RequestMapping("/user")
+    public String User(Model model){
+
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        model.addAttribute("login", login);
+        return "user";
     }
 
 
@@ -955,13 +1004,12 @@ public class MyController {
 
     private ResponseEntity<byte[]> photoById(long id) {
         byte[] bytes = advertisementPhotoService.get(id).getPhoto();
-        if (bytes == null)
-            throw new PhotoNotFoundException();
+        advertisementPhotoService.PhotoAdvertisementNotFoundException(bytes);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
 
-        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
 }
