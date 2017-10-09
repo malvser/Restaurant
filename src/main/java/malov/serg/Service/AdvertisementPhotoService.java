@@ -2,6 +2,7 @@ package malov.serg.Service;
 
 
 import malov.serg.Model.AdvertisementPhoto;
+import malov.serg.PhotoNotFoundException;
 import malov.serg.Repository.AdvertisementPhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -87,6 +88,15 @@ public class AdvertisementPhotoService {
         for (long id : idList)
             advertisementPhotoRepository.delete(id);
     }
+    @Transactional
+    public void PhotoAdvertisementNotFoundException(byte[] bytes) {
+
+        if (bytes == null) {
+            throw new PhotoNotFoundException();
+        }
+    }
+
+
 
 
 }
