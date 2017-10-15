@@ -13,7 +13,7 @@ public class CustomUser {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
+    private Integer bonus;
     private String email;
     private String phone;
 
@@ -31,7 +31,24 @@ public class CustomUser {
         this.phone = phone;
     }
 
+    public CustomUser(String login, String password, UserRole role, String email, String phone, Integer bonus) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.phone = phone;
+        this.bonus = bonus;
+    }
+
     public CustomUser() {}
+
+    public Integer getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(Integer bonus) {
+        this.bonus = bonus;
+    }
 
     public String getLogin() {
         return login;

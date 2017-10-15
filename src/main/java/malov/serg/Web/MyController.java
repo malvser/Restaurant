@@ -44,6 +44,7 @@ public class MyController {
     static final int ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT = 6;
     static final int ITEMS_PER_PAGE_COOKED_ORDERS = 3;
     static final int ITEMS_PER_PAGE_COUNT_ORDERS = 3;
+    static final int ITEMS_PER_PAGE_USER = 6;
 
 
     @Autowired
@@ -76,9 +77,8 @@ public class MyController {
     //Spring Security
 
 
-
     @RequestMapping("/unauthorized")
-    public String unauthorized(Model model){
+    public String unauthorized(Model model) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("login", user.getUsername());
         return "unauthorized";
@@ -96,13 +96,26 @@ public class MyController {
         return "register_for_admin";
     }
 
+    @RequestMapping("/userlist")
+    public String userList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        List<CustomUser> customUsers = userService.findAll(new PageRequest(page, ITEMS_PER_PAGE_USER, Sort.Direction.DESC, "id"));
+        model.addAttribute("login", login);
+        model.addAttribute("allPages", page);
+        model.addAttribute("customUsers", customUsers);
+        model.addAttribute("allPages", getPageCountUser());
+
+        return "userList";
+    }
+
 
     @RequestMapping(value = "/newuser", method = RequestMethod.POST)
     public String newUser(@RequestParam String login,
-                         @RequestParam String password,
-                         @RequestParam String email,
-                         @RequestParam String phone,
-                         Model model) {
+                          @RequestParam String password,
+                          @RequestParam String email,
+                          @RequestParam String phone,
+                          Model model) {
         if (userService.existsByLogin(login)) {
             model.addAttribute("exists", true);
             return "register";
@@ -119,11 +132,11 @@ public class MyController {
 
     @RequestMapping(value = "/newanyuser", method = RequestMethod.POST)
     public String newCook(@RequestParam String login,
-                         @RequestParam String password,
-                         @RequestParam(value = "role") String role,
-                         @RequestParam String email,
-                         @RequestParam String phone,
-                         Model model) {
+                          @RequestParam String password,
+                          @RequestParam(value = "role") String role,
+                          @RequestParam String email,
+                          @RequestParam String phone,
+                          Model model) {
         if (userService.existsByLogin(login)) {
             model.addAttribute("exists", true);
             return "register_for_admin";
@@ -135,11 +148,11 @@ public class MyController {
         String passHash = encoder.encodePassword(password, null);
         CustomUser dbUser;
 
-        if(("ROLE_" + role).equals(UserRole.ADMIN.toString())){
-             dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone);
-        }else if(("ROLE_" + role).equals(UserRole.COOK.toString())){
+        if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
+            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone);
+        } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
             dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone);
-        }else{
+        } else {
             dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
         }
 
@@ -150,7 +163,7 @@ public class MyController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@RequestParam(required = false) String email, @RequestParam(required = false) String phone) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
 
         //изменить код. на синхронизацию
@@ -174,7 +187,7 @@ public class MyController {
 
     @RequestMapping("/")
     public String index(Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
 
         CustomUser dbUser = userService.getUserByLogin(login);
@@ -188,11 +201,10 @@ public class MyController {
     }
 
 
-
-    @RequestMapping("/enter_cook")
+    @RequestMapping("/enter_cook/enter_cook")
     public String indexCook(Model model) {
 
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         int count_order = 0;
         int count_cooking_order = 0;
@@ -202,12 +214,12 @@ public class MyController {
         int countDishesCookingOrder = 0;
         List<Order> orders = orderService.findAll();
         for (Order order : orders) {
-            if(!order.getCooking()){
+            if (!order.getCooking()) {
                 count_order += 1;
                 totalCookingTimeNewOrder += order.getTotalCookingTime();
                 countDishesNewOrder += order.getDishes().size();
 
-            }else{
+            } else {
                 count_cooking_order += 1;
                 totalCookingTime += order.getTotalCookingTime();
                 countDishesCookingOrder += order.getDishes().size();
@@ -226,12 +238,9 @@ public class MyController {
     }
 
 
-
-
-
     @RequestMapping("/dishesList")
     public String dishList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         if (page < 0) page = 0;
 
@@ -254,10 +263,21 @@ public class MyController {
     }
 
 
-
     @RequestMapping("/add_dish")
-    public String dishAddPage() {
+    public String dishAddPage(Model model, @RequestParam(required = false) Long id) {
 
+        if (id != 0) {
+            Dish dish = dishService.findOne(id);
+
+            model.addAttribute("bonus", dish.getBonus());
+            model.addAttribute("cost", dish.getCost());
+            model.addAttribute("discount", dish.getDiscount());
+            model.addAttribute("duration", dish.getDuration());
+            model.addAttribute("name", dish.getName());
+            model.addAttribute("weight", dish.getWeight());
+            model.addAttribute("type", dish.getType());
+            model.addAttribute("photo", dish.getPhoto());
+        }
         return "dish_add_page";
     }
 
@@ -270,12 +290,13 @@ public class MyController {
                           @RequestParam int cost,
                           @RequestParam int weight,
                           @RequestParam int discount,
+                          @RequestParam int bonus,
                           @RequestParam int duration,
                           @RequestParam String type) {
 
 
         try {
-            Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type);
+            Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type, bonus);
             dishService.addDish(dish);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -283,7 +304,7 @@ public class MyController {
         }
 
 
-        return "redirect:/search_hot_snacks";
+        return "redirect:/dishesList";
     }
 
 
@@ -291,7 +312,8 @@ public class MyController {
 
     @RequestMapping(value = "/search_dishes", method = RequestMethod.POST)
     public String search(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         String login = user.getUsername();
         model.addAttribute("login", login);
         model.addAttribute("dishes", dishService.findByPattern(pattern, null));
@@ -302,7 +324,7 @@ public class MyController {
 
     @RequestMapping(value = "/search_advertisement", method = RequestMethod.POST)
     public String searchAdvertisement(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         model.addAttribute("advertisement", advertisementPhotoService.findByPattern(pattern, null));
@@ -311,25 +333,25 @@ public class MyController {
 
     @RequestMapping(value = "/search_no_advertisement", method = RequestMethod.POST)
     public String searchNoAdvertisement(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
-        model.addAttribute("noAdvertisements",noAdvertisementService.findByPattern(pattern, null));
+        model.addAttribute("noAdvertisements", noAdvertisementService.findByPattern(pattern, null));
         return "statistics_no_advertisement";
     }
 
     @RequestMapping(value = "/search_viewed_advertisement", method = RequestMethod.POST)
     public String searchViewedAdvertisement(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
-        model.addAttribute("viewedAdvertisements",viewedAdvertisementService.findByPattern(pattern, null));
+        model.addAttribute("viewedAdvertisements", viewedAdvertisementService.findByPattern(pattern, null));
         return "statistics_viewed_advertisement";
     }
 
     @RequestMapping(value = "/search_cook", method = RequestMethod.POST)
     public String searchCook(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         model.addAttribute("cook", cookService.findByPattern(pattern, null));
@@ -338,7 +360,7 @@ public class MyController {
 
     @RequestMapping(value = "/search_cooked_order", method = RequestMethod.POST)
     public String searchCookedOrder(@RequestParam String pattern, Model model) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         model.addAttribute("cookedOrderList", cookedOrderService.findByPattern(pattern, null));
@@ -346,10 +368,23 @@ public class MyController {
         return "statistics_cooked_order";
     }
 
+    @RequestMapping("/search_dish")
+    public String searchDish(@RequestParam String pattern_search,
+                             @RequestParam String pattern, Model model) {
 
+        model.addAttribute("dishes", dishService.findByType(pattern_search));
+        model.addAttribute("pattern", pattern);
+
+
+        return "main";
+    }
 
     @RequestMapping("/search_hot_snacks")
     public String searchHotSnacks(Model model) {
+
+
+        getAuthentication(model);
+
         String pattern = "Горячии закуски";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -360,6 +395,9 @@ public class MyController {
 
     @RequestMapping("/search_cold_snacks")
     public String searchColdSnacks(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Холодные закуски";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -368,6 +406,9 @@ public class MyController {
 
     @RequestMapping("/search_all")
     public String searchAll(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Все блюда";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -376,6 +417,9 @@ public class MyController {
 
     @RequestMapping("/search_salads")
     public String searchSalads(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Салаты";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -384,6 +428,9 @@ public class MyController {
 
     @RequestMapping("/search_first_meal")
     public String searchFirstMeal(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Первые блюда";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -391,9 +438,11 @@ public class MyController {
     }
 
 
-
     @RequestMapping("/search_garnishes")
     public String searchGarnishes(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Гарниры";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -402,6 +451,9 @@ public class MyController {
 
     @RequestMapping("/search_supe")
     public String searchSupe(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Супы";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -411,6 +463,9 @@ public class MyController {
 
     @RequestMapping("/search_beverages")
     public String searchBeverages(Model model) {
+
+        getAuthentication(model);
+
         String pattern = "Напитки";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
@@ -420,11 +475,17 @@ public class MyController {
 
     @RequestMapping("/search_alcoholic_beverages")
     public String searchAlcoholicBeverages(Model model) {
+
+        getAuthentication(model);
+
+
         String pattern = "Алкогольные напитки";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
         return "main";
     }
+
+
     //.....
 
     @RequestMapping("/photo/{photo_id}")
@@ -460,7 +521,7 @@ public class MyController {
     public String tabletList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
         if (page < 0) page = 0;
 
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
 
         List<Tablet> tablets = tabletService
@@ -485,7 +546,6 @@ public class MyController {
     }
 
 
-
     // CookController
 
 
@@ -505,7 +565,7 @@ public class MyController {
 
     @RequestMapping("/cookList")
     public String cookList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
 
         if (page < 0) page = 0;
@@ -522,13 +582,13 @@ public class MyController {
     }
 
     @RequestMapping("/order_for_cooks")
-    public String orderForCooks(Model model){
+    public String orderForCooks(Model model) {
 
         List<Order> orderList = orderService.findAll();
         Order order = null;
         if (orderList.size() > 0) {
-            for(int i = 0; i < orderList.size(); i++){
-                if(!orderList.get(i).getCooking()){
+            for (int i = 0; i < orderList.size(); i++) {
+                if (!orderList.get(i).getCooking()) {
                     order = orderList.get(i);
                     order.setCooking(true);
                     orderService.addOrder(order);
@@ -536,7 +596,7 @@ public class MyController {
                 }
             }
         }
-        if(order != null) {
+        if (order != null) {
             model.addAttribute("dishesList", order.getDishes());
             model.addAttribute("numberTable", order.getTablet().getNumber());
             model.addAttribute("orderId", order.getId());
@@ -547,7 +607,7 @@ public class MyController {
     }
 
     @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
-    public String cookedOrder(@RequestParam(value = "id") long id){
+    public String cookedOrder(@RequestParam(value = "id") long id) {
        /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         */
@@ -570,12 +630,12 @@ public class MyController {
             cookedOrderService.addCookedOrder(cookedOrder);
             orderService.deleteOrder(id);
         }
-            return "redirect:/order_for_cooks";
+        return "redirect:/order_for_cooks";
 
     }
 
     @RequestMapping(value = "/cooked_order_exit", method = RequestMethod.POST)
-    public String cookedOrderExit(@RequestParam long order_id){
+    public String cookedOrderExit(@RequestParam long order_id) {
        /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         */
@@ -608,45 +668,86 @@ public class MyController {
     }
 
 
-
-
     //...OrderController
 
 
+    @RequestMapping(value = "/made/order_bonus", method = RequestMethod.POST)
+    public String orderCookBonus(Model model, @RequestParam(value = "toOrder[]") long[] id) {
+
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        CustomUser customUser = userService.getUserByLogin(login);
+        int bonus = customUser.getBonus();
+
+        List<Tablet> tablet = tabletService.findAll();
+        int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
+        Order order = null;
+        List<Dish> dishList = dishService.findArrayId(id);
+        for (Dish dish : dishList) {
+            if (dish.getBonus() <= bonus) {
+                bonus = bonus - dish.getBonus();
+            }
+        }
+        customUser.setBonus(customUser.getBonus() + dishList.size());
+        userService.updateUser(customUser);
+
+        try {
+            order = new Order(tablet.get(random), dishList, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        orderService.addOrder(order);
+
+        String s = "";
+        for (long i : id) {
+            s += "" + i + " ";
+        }
+
+        model.addAttribute("dishesArrayId", dishList);
+        model.addAttribute("Id", s);
+        return "order_cook";
+    }
 
 
     @RequestMapping(value = "/made/order", method = RequestMethod.POST)
     public String orderCook(Model model, @RequestParam(value = "toOrder[]") long[] id) {
 
-            List<Tablet> tablet = tabletService.findAll();
-            int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
-            Order order = null;
-            List<Dish> dishList = dishService.findArrayId(id);
-            try {
-                order = new Order(tablet.get(random), dishList, false);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            orderService.addOrder(order);
+        List<Tablet> tablet = tabletService.findAll();
+        int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
+        Order order = null;
+        List<Dish> dishList = dishService.findArrayId(id);
+
+        if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            CustomUser customUser = userService.getUserByLogin(user.getUsername());
+            customUser.setBonus(customUser.getBonus() + dishList.size());
+            userService.updateUser(customUser);
+        }
+
+
+        try {
+            order = new Order(tablet.get(random), dishList, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        orderService.addOrder(order);
 
         String s = "";
-        for (long i : id ) {
+        for (long i : id) {
             s += "" + i + " ";
         }
 
-            model.addAttribute("dishesArrayId", dishList);
-            model.addAttribute("Id", s);
-            return "order_cook";
+        model.addAttribute("dishesArrayId", dishList);
+        model.addAttribute("Id", s);
+        return "order_cook";
     }
-
-
-
 
     // AdvertisementController
 
     @RequestMapping("/advertisementList")
     public String advertisementList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
 
 
@@ -668,7 +769,7 @@ public class MyController {
     public String onView(Model model, @RequestParam("IdDishes") String idDishes) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
-        if(advertisementPhotos.size() > 0) {
+        if (advertisementPhotos.size() > 0) {
 
             int random = (ThreadLocalRandom.current().nextInt(advertisementPhotos.size()));
             long id = advertisementPhotos.get(random).getId();
@@ -681,10 +782,10 @@ public class MyController {
             addViewedAdvertisement(id);
 
             model.addAttribute("photo_id", id);
-        }else{
+        } else {
 
-                String[] array = idDishes.split(" ");
-                long[] arrayId = new long[array.length];
+            String[] array = idDishes.split(" ");
+            long[] arrayId = new long[array.length];
             for (int i = 0; i < array.length; i++) {
                 arrayId[i] = Long.parseLong(array[i]);
             }
@@ -692,7 +793,7 @@ public class MyController {
 
             List<Dish> dishes = dishService.findArrayId(arrayId);
             long sumDuration = 0;
-            for (Dish dish :dishes) {
+            for (Dish dish : dishes) {
                 sumDuration += dish.getDuration();
             }
             NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
@@ -704,47 +805,43 @@ public class MyController {
     }
 
 
-
     @RequestMapping(value = "/advertisement/view/{photo_id}")
     public String onViewNext(Model model, @PathVariable("photo_id") long id) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
 
 
+        long idNext = 0;
+        int y;
+        for (int i = 0; i < advertisementPhotos.size(); i++) {
 
-            long idNext = 0;
-            int y;
-            for (int i = 0; i < advertisementPhotos.size(); i++) {
+            if (advertisementPhotos.get(i).getId() == id) {
+                if ((y = i + 1) < advertisementPhotos.size()) {
+                    idNext = advertisementPhotos.get(y).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(y);
+                    Long amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
+                    advertisementPhotoService.addAdvertisement(adv);
+                    break;
+                } else {
+                    idNext = advertisementPhotos.get(0).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(0);
+                    Long amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
+                    advertisementPhotoService.addAdvertisement(adv);
+                    break;
 
-                if (advertisementPhotos.get(i).getId() == id) {
-                    if ((y = i + 1) < advertisementPhotos.size()) {
-                        idNext = advertisementPhotos.get(y).getId();
-                        AdvertisementPhoto adv = advertisementPhotos.get(y);
-                        Long amount = adv.getAmount();
-                        adv.setAmount(amount - 1);
-                        advertisementPhotoService.addAdvertisement(adv);
-                        break;
-                    } else {
-                        idNext = advertisementPhotos.get(0).getId();
-                        AdvertisementPhoto adv = advertisementPhotos.get(0);
-                        Long amount = adv.getAmount();
-                        adv.setAmount(amount - 1);
-                        advertisementPhotoService.addAdvertisement(adv);
-                        break;
-
-                    }
                 }
             }
+        }
 
         addViewedAdvertisement(idNext);
 
-            model.addAttribute("photo_id", idNext);
+        model.addAttribute("photo_id", idNext);
 
 
         return "advertisement_view";
     }
-
-
 
 
     @RequestMapping(value = "/advertisement/viewed/{photo_id}")
@@ -758,16 +855,16 @@ public class MyController {
         for (int i = 0; i < advertisementPhotos.size(); i++) {
 
             if (advertisementPhotos.get(i).getId() == id) {
-                if(i > 0) {
-                        y = i - 1;
-                        idBack = advertisementPhotos.get(y).getId();
-                        AdvertisementPhoto adv = advertisementPhotos.get(y);
-                        Long amount = adv.getAmount();
-                        adv.setAmount(amount - 1);
-                        advertisementPhotoService.addAdvertisement(adv);
-                        break;
+                if (i > 0) {
+                    y = i - 1;
+                    idBack = advertisementPhotos.get(y).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(y);
+                    Long amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
+                    advertisementPhotoService.addAdvertisement(adv);
+                    break;
 
-                }else {
+                } else {
                     idBack = advertisementPhotos.get(advertisementPhotos.size() - 1).getId();
                     AdvertisementPhoto adv = advertisementPhotos.get(advertisementPhotos.size() - 1);
                     Long amount = adv.getAmount();
@@ -788,8 +885,6 @@ public class MyController {
     }
 
 
-
-
     @RequestMapping("/advertisement/add_page")
     public String advertisementAddPage() {
 
@@ -805,7 +900,7 @@ public class MyController {
                           @RequestParam long amount,
                           @RequestParam long total_amount) {
 
-        if(name == null || body_photo == null || cost == 0 || amount == 0 || total_amount == 0){
+        if (name == null || body_photo == null || cost == 0 || amount == 0 || total_amount == 0) {
             return "redirect:/advertisementList";
         }
         try {
@@ -822,7 +917,7 @@ public class MyController {
     }
 
 
-     @RequestMapping("/photo/advertisement/{photo_id}")
+    @RequestMapping("/photo/advertisement/{photo_id}")
     public ResponseEntity<byte[]> onPhoto(@PathVariable("photo_id") long id) {
         return photoById(id);
     }
@@ -840,8 +935,8 @@ public class MyController {
     //StatisticController
 
     @RequestMapping("/statistic_cooked_order")
-    public String statisticCookedOrder(Model model, @RequestParam(required = false, defaultValue = "0") Integer page){
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String statisticCookedOrder(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         List<CookedOrder> cookedOrderList = cookedOrderService.findAll(new PageRequest
                 (page, ITEMS_PER_PAGE_COOKED_ORDERS, Sort.Direction.DESC, "id"));
@@ -863,8 +958,8 @@ public class MyController {
 
 
     @RequestMapping("/statistic_viewed_advertisement")
-    public String statisticViewedAdvertisement(Model model,@RequestParam(required = false, defaultValue = "0") Integer page) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String statisticViewedAdvertisement(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         if (page < 0) page = 0;
 
@@ -888,8 +983,8 @@ public class MyController {
 
 
     @RequestMapping("/statistic_no_advertisement")
-    public String statisticNoAdvertisement(Model model,@RequestParam(required = false, defaultValue = "0") Integer page){
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String statisticNoAdvertisement(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         if (page < 0) page = 0;
         List<NoAdvertisement> noAdvertisements = noAdvertisementService.findAll(new PageRequest(page, ITEMS_PER_PAGE_NO_ADVERTISEMENT, Sort.Direction.DESC, "id"));
@@ -911,18 +1006,18 @@ public class MyController {
 
 
     @RequestMapping("/admin")
-    public String Admin(Model model){
+    public String Admin(Model model) {
 
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         return "admin";
     }
 
     @RequestMapping("/user")
-    public String User(Model model){
+    public String User(Model model) {
 
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
         model.addAttribute("login", login);
         return "user";
@@ -936,7 +1031,7 @@ public class MyController {
 
         for (AdvertisementPhoto adv : advertisementPhotos) {
 
-            if(adv.getAmount() <= 0){
+            if (adv.getAmount() <= 0) {
                 advertisementPhotoService.deleteId(adv.getId());
             }
         }
@@ -983,17 +1078,22 @@ public class MyController {
         return (totalCount / ITEMS_PER_PAGE_DISH) + ((totalCount % ITEMS_PER_PAGE_DISH > 0) ? 1 : 0);
     }
 
+    private long getPageCountUser() {
+        long totalCount = userService.count();
+        return (totalCount / ITEMS_PER_PAGE_USER) + ((totalCount % ITEMS_PER_PAGE_USER > 0) ? 1 : 0);
+    }
+
     private long getPageCountViewedAdvertisement() {
         long totalCount = viewedAdvertisementService.count();
-        return (totalCount / ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT  > 0) ? 1 : 0);
+        return (totalCount / ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_VIEWED_ADVERTISEMENT > 0) ? 1 : 0);
 
     }
+
     private long getPageCountNoAdvertisement() {
         long totalCount = noAdvertisementService.count();
         return (totalCount / ITEMS_PER_PAGE_NO_ADVERTISEMENT) + ((totalCount % ITEMS_PER_PAGE_NO_ADVERTISEMENT > 0) ? 1 : 0);
 
     }
-
 
 
     private long getPageCountTablet() {
@@ -1010,6 +1110,22 @@ public class MyController {
         headers.setContentType(MediaType.IMAGE_PNG);
 
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    }
+
+
+    private void getAuthentication(Model model) {
+        if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String login = user.getUsername();
+            model.addAttribute("login", login);
+            CustomUser customUser = userService.getUserByLogin(login);
+            if(customUser.getBonus() != null) {
+                int bonus = customUser.getBonus();
+                if (bonus >= 15) {
+                    model.addAttribute("bonus", bonus);
+                }
+            }
+        }
     }
 
 }

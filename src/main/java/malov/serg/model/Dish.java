@@ -27,6 +27,7 @@ public class Dish implements Serializable {
     @ManyToMany(mappedBy = "cookingDishes", cascade = CascadeType.ALL)
     private List<CookedOrder> cookedOrders = new ArrayList<>();
     private String type;
+    private Integer bonus;
     private String name;
     private int cost;
     private int weight;
@@ -35,6 +36,14 @@ public class Dish implements Serializable {
 
     public List<CookedOrder> getCookedOrders() {
         return cookedOrders;
+    }
+
+    public Integer getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(Integer bonus) {
+        this.bonus = bonus;
     }
 
     public List<Order> getOrder() {
@@ -86,6 +95,16 @@ public class Dish implements Serializable {
         this.weight = weight;
         this.discount = discount;
         this.duration = duration;
+    }
+    public Dish(byte[] photo, String name, int cost, int weight, int discount, int duration, String type, Integer bonus) {
+        this.photo = photo;
+        this.name = name;
+        this.cost = cost;
+        this.weight = weight;
+        this.discount = discount;
+        this.duration = duration;
+        this.type = type;
+        this.bonus = bonus;
     }
 
 

@@ -35,13 +35,16 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">×</span></button>
-                <div class="modal-lg">Photo</div>
+                <div class="modal-lg"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    Фото</em></font>
+                </div>
             </div>
             <div class="modal-body">
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    Закрыть</em></font></button>
             </div>
         </div>
     </div>
@@ -68,12 +71,29 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/search_hot_snacks">Сброс поиска</a></li>
-                <li><a href="/logout">Выход</a></li>
+                <c:if test="${login ne null}">
+                    <li> <a>Ваш логин: ${login}</a></li>
+                    <li><a href="/logout">Выход</a></li>
+                </c:if>
             </ul>
+            <c:if test="${login ne null}">
+            <input type="hidden" name="log" id="log" value="${login}">
+            </c:if>
+            <c:if test="${login eq null}">
+                <input type="hidden" name="log" id="log" value="empty">
+            </c:if>
 
-            <form class="navbar-form navbar-right" role="search" action="/search_dishes" method="post">
+            <c:if test="${bonus ne null}">
+                <input type="hidden" name="bonus" id="bonus" value="${bonus}">
+            </c:if>
+            <c:if test="${bonus eq null}">
+                <input type="hidden" name="bonus" id="bonus" value="little">
+            </c:if>
+
+
+            <form class="navbar-form navbar-right" role="search" action="/search_dish" method="post">
                 <div class="form-group">
-                    <input type="text" class="form-control" name="pattern" placeholder="Поиск">
+                    <input type="text" class="form-control" name="pattern_search" placeholder="Поиск">
                 </div>
                 <button type="submit" class="btn btn-primary">Поиск</button>
 
@@ -87,7 +107,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-
+            <input hidden name="pattern" value="${pattern}">
                 <ul class="nav nav-sidebar">
                     <li <c:if test="${pattern eq 'Все блюда'}">
                         class="active"
@@ -158,6 +178,9 @@
                                 Скидка</em></font>
                             </th>
                             <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                К-во бонусов</em></font>
+                            </th>
+                            <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Фото</em></font>
                             </th>
 
@@ -173,6 +196,7 @@
                                     <td><c:out value="${item.weight}"/>
                                     <td><c:out value="${item.cost}"/>
                                     <td><c:out value="${item.discount}"/>
+                                    <td><c:out value="${item.bonus}"/>
                                     <td>
                                         <div id="aaa"
                                              style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
@@ -202,7 +226,6 @@
 <script src="resources/js/photo.js"></script>
 <script src="resources/jquery.confirm/js/script.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
-
 
 
 </body>
