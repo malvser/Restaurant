@@ -124,7 +124,7 @@ public class MyController {
         ShaPasswordEncoder encoder = new ShaPasswordEncoder();
         String passHash = encoder.encodePassword(password, null);
 
-        CustomUser dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
+        CustomUser dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0);
         userService.addUser(dbUser);
 
         return "redirect:/";
@@ -149,11 +149,11 @@ public class MyController {
         CustomUser dbUser;
 
         if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone);
+            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0);
         } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone);
+            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0);
         } else {
-            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone);
+            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0);
         }
 
         userService.addUser(dbUser);
@@ -201,7 +201,7 @@ public class MyController {
     }
 
 
-    @RequestMapping("/enter_cook/enter_cook")
+    @RequestMapping("/enter_cook")
     public String indexCook(Model model) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -368,12 +368,11 @@ public class MyController {
         return "statistics_cooked_order";
     }
 
-    @RequestMapping("/search_dish")
-    public String searchDish(@RequestParam String pattern_search,
-                             @RequestParam String pattern, Model model) {
+    @RequestMapping(value = "/search_dish", method = RequestMethod.POST)
+    public String searchDish(@RequestParam String pattern, Model model) {
 
-        model.addAttribute("dishes", dishService.findByType(pattern_search));
-        model.addAttribute("pattern", pattern);
+        model.addAttribute("dishes", dishService.findByPattern(pattern));
+       // model.addAttribute("pattern", pattern);
 
 
         return "main";
@@ -597,21 +596,22 @@ public class MyController {
             }
         }
         if (order != null) {
+            String order_id = "" + order.getId();
             model.addAttribute("dishesList", order.getDishes());
             model.addAttribute("numberTable", order.getTablet().getNumber());
-            model.addAttribute("orderId", order.getId());
+            model.addAttribute("orderId", order_id);
         }
 
 
         return "order_for_cooks";
     }
 
-    @RequestMapping(value = "/cooked_order", method = RequestMethod.POST)
-    public String cookedOrder(@RequestParam(value = "id") long id) {
-       /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
+    @RequestMapping(value = "/cooked_order/{id}")
+    public String cookedOrderNewOrder(@PathVariable("id") long id) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
-        */
-        if (id > 0) {
 
             Order order = orderService.findOne(id);
             long[] id_dish = new long[order.getDishes().size()];
@@ -629,22 +629,22 @@ public class MyController {
 
             cookedOrderService.addCookedOrder(cookedOrder);
             orderService.deleteOrder(id);
-        }
+
         return "redirect:/order_for_cooks";
 
     }
 
-    @RequestMapping(value = "/cooked_order_exit", method = RequestMethod.POST)
-    public String cookedOrderExit(@RequestParam long order_id) {
-       /* User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    @RequestMapping(value = "/cooked_order_exit/{id}")
+    public String cookedOrderExit(@PathVariable("id") long id) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
-        */
-        if (order_id > 0) {
-            Order order = orderService.findOne(order_id);
-            long[] id = new long[order.getDishes().size()];
+
+            Order order = orderService.findOne(id);
+            long[] id_dish = new long[order.getDishes().size()];
             int i = 0;
             for (Dish dish : order.getDishes()) {
-                id[i] = dish.getId();
+                id_dish[i] = dish.getId();
                 i++;
             }
 
@@ -652,12 +652,13 @@ public class MyController {
             //переделать с рандом на конкрет. повара
             int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
             CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
-                    cooks.get(random), dishService.findArrayId(id), order.getTotalCookingTime());
+                    cooks.get(random), dishService.findArrayId(id_dish), order.getTotalCookingTime());
 
             cookedOrderService.addCookedOrder(cookedOrder);
-            orderService.deleteOrder(order_id);
-        }
+            orderService.deleteOrder(id);
+
         return "redirect:/enter_cook";
+
     }
 
     @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
@@ -677,6 +678,7 @@ public class MyController {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
+
         CustomUser customUser = userService.getUserByLogin(login);
         int bonus = customUser.getBonus();
 
@@ -689,8 +691,8 @@ public class MyController {
                 bonus = bonus - dish.getBonus();
             }
         }
-        customUser.setBonus(customUser.getBonus() + dishList.size());
-        userService.updateUser(customUser);
+        customUser.setBonus(bonus + dishList.size());
+        userService.addUser(customUser);
 
         try {
             order = new Order(tablet.get(random), dishList, false);
@@ -706,6 +708,7 @@ public class MyController {
 
         model.addAttribute("dishesArrayId", dishList);
         model.addAttribute("Id", s);
+        model.addAttribute("login", login);
         return "order_cook";
     }
 
@@ -720,9 +723,11 @@ public class MyController {
 
         if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            CustomUser customUser = userService.getUserByLogin(user.getUsername());
+            String login = user.getUsername();
+            CustomUser customUser = userService.getUserByLogin(login);
             customUser.setBonus(customUser.getBonus() + dishList.size());
             userService.updateUser(customUser);
+            model.addAttribute("login", login);
         }
 
 
