@@ -16,7 +16,9 @@ $(document).ready(function(){
 
                             var date = {'toDelete[]': []};
                             $(":checked").each(function () {
-                                date['toDelete[]'].push($(this).val());
+                                if ($(this).val() != 0) {
+                                    date['toDelete[]'].push($(this).val());
+                                }
                             });
 
                             $.post("/viewed_advertisement/delete", date, function(data, status) {

@@ -92,6 +92,7 @@
 
             <ul class="nav nav-sidebar">
 
+                <li><a href="/enter_cook"> <b>Просмотр состояния заказов</b></a></li>
                 <li><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
                 <li class="active"><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
                 <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
@@ -103,10 +104,10 @@
                 <li><a href="/tabletList"><b>Список столов</b></a></li>
                 <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
                 <li><a href="/dishesList"><b>Список блюд</b></a></li>
+                <li><a href="/register_admin"><b>Создать пользователя</b></a></li>
+                <li><a href="/userlist"><b>Список пользователей</b></a></li>
 
             </ul>
-
-
 
         </div>
 
@@ -125,7 +126,7 @@
                             </th>
                             -->
                             <th width="1%"><font size="6" color="#ff6347" face="Monotype Corsiva"><em>
-                                Все  <input type="checkbox" id="alls"/></em></font>
+                                Все  <input type="checkbox" value="0" id="alls"/></em></font>
                             </th>
 
                             <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
