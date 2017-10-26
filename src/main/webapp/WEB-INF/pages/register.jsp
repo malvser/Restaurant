@@ -34,6 +34,8 @@
         <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email" required>
         <label for="inputPhone" class="sr-only">phone</label>
         <input type="text" id="inputPhone" name="phone" class="form-control" placeholder="Phone" required>
+        <input type="text" id="inputFull_name" name="full_name" class="form-control" placeholder="ФИО">
+
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Зарегистрировать</button>
 
