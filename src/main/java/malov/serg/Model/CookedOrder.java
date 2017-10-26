@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "cookedorder")
+@Table(name = "cookedorders")
 public class CookedOrder {
 
     @Id
@@ -18,7 +18,6 @@ public class CookedOrder {
 
 
     private Integer tabletNumber;  // — имя планшета
-    private String cookName;  // — имя повара
     private  int cookingTimeSeconds;  // — время приготовления заказа в секундах
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -28,16 +27,15 @@ public class CookedOrder {
     private List<Dish> cookingDishes;   // — список блюд для приготовления
     private String date;
     @ManyToOne
-    @JoinColumn(name="cookCookedOrder_id")
-    private Cook cookCookedOrder;
+    @JoinColumn(name="cookCookedOrderId")
+    private CustomUser cookCookedOrder;
 
 
-    public CookedOrder(Integer tabletName, Cook cookCookedOrder, List<Dish> cookedDish, int cookingTimeSeconds) {
+    public CookedOrder(Integer tabletName, CustomUser cook, List<Dish> cookedDish, int cookingTimeSeconds) {
         this.tabletNumber = tabletName;
-        this.cookCookedOrder = cookCookedOrder;
+        this.cookCookedOrder = cook;
         this.cookingTimeSeconds = cookingTimeSeconds;
         this.cookingDishes = cookedDish;
-        this.cookName = cookCookedOrder.getName();
         this.date = DateFormat();
 
     }
@@ -50,12 +48,12 @@ public class CookedOrder {
         return simpleDateFormat.format(new Date());
     }
 
-    public Cook getCookCookedOrder() {
+    public CustomUser getCook() {
         return cookCookedOrder;
     }
 
-    public void setCookCookedOrder(Cook cookCookedOrder) {
-        this.cookCookedOrder = cookCookedOrder;
+    public void setCook(CustomUser cook) {
+        this.cookCookedOrder = cook;
     }
 
     public long getId() {
@@ -82,7 +80,5 @@ public class CookedOrder {
         return date;
     }
 
-    public String getCookName() {
-        return cookName;
-    }
+
 }
