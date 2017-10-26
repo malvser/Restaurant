@@ -60,9 +60,6 @@ public class MyController {
     private AdvertisementPhotoService advertisementPhotoService;
 
     @Autowired
-    private CookService cookService;
-
-    @Autowired
     private CookedOrderService cookedOrderService;
 
     @Autowired
@@ -115,6 +112,7 @@ public class MyController {
                           @RequestParam String password,
                           @RequestParam String email,
                           @RequestParam String phone,
+                          @RequestParam String full_name,
                           Model model) {
         if (userService.existsByLogin(login)) {
             model.addAttribute("exists", true);
@@ -123,8 +121,13 @@ public class MyController {
 
         ShaPasswordEncoder encoder = new ShaPasswordEncoder();
         String passHash = encoder.encodePassword(password, null);
+        CustomUser dbUser;
+        if(full_name != null){
+            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
+        }else{
+            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0);
+        }
 
-        CustomUser dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0);
         userService.addUser(dbUser);
 
         return "redirect:/";
@@ -136,9 +139,11 @@ public class MyController {
                           @RequestParam(value = "role") String role,
                           @RequestParam String email,
                           @RequestParam String phone,
+                          @RequestParam String full_name,
                           Model model) {
         if (userService.existsByLogin(login)) {
             model.addAttribute("exists", true);
+            model.addAttribute("userRole", UserRole.values());
             return "register_for_admin";
         }
 
@@ -149,11 +154,11 @@ public class MyController {
         CustomUser dbUser;
 
         if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0);
+            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0, full_name);
         } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0);
+            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0, full_name);
         } else {
-            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0);
+            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
         }
 
         userService.addUser(dbUser);
@@ -204,37 +209,16 @@ public class MyController {
     @RequestMapping("/enter_cook")
     public String indexCook(Model model) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String login = user.getUsername();
-        int count_order = 0;
-        int count_cooking_order = 0;
-        int totalCookingTime = 0;
-        int totalCookingTimeNewOrder = 0;
-        int countDishesNewOrder = 0;
-        int countDishesCookingOrder = 0;
-        List<Order> orders = orderService.findAll();
-        for (Order order : orders) {
-            if (!order.getCooking()) {
-                count_order += 1;
-                totalCookingTimeNewOrder += order.getTotalCookingTime();
-                countDishesNewOrder += order.getDishes().size();
-
-            } else {
-                count_cooking_order += 1;
-                totalCookingTime += order.getTotalCookingTime();
-                countDishesCookingOrder += order.getDishes().size();
-            }
-
-        }
-
-        model.addAttribute("login", login);
-        model.addAttribute("count_order", count_order);
-        model.addAttribute("count_cooking_order", count_cooking_order);
-        model.addAttribute("totalCookingTimeNewOrder", totalCookingTimeNewOrder);
-        model.addAttribute("totalCookingTime", totalCookingTime);
-        model.addAttribute("countDishesNewOrder", countDishesNewOrder);
-        model.addAttribute("countDishesCookingOrder", countDishesCookingOrder);
+        infoForCook(model);
         return "index_cook";
+    }
+
+
+    @RequestMapping("/enter_cook_admin")
+    public String indexCookAdmin(Model model) {
+
+        infoForCook(model);
+        return "index_cook_admin";
     }
 
 
@@ -266,7 +250,7 @@ public class MyController {
     @RequestMapping("/add_dish")
     public String dishAddPage(Model model, @RequestParam(required = false) Long id) {
 
-        if (id != 0) {
+        if (id != null) {
             Dish dish = dishService.findOne(id);
 
             model.addAttribute("bonus", dish.getBonus());
@@ -321,6 +305,14 @@ public class MyController {
         return "dishesList";
     }
 
+    @RequestMapping(value = "/search_user", method = RequestMethod.POST)
+    public String searchUsers(@RequestParam(required = false) String pattern, Model model) {
+        if(pattern != null) {
+            model.addAttribute("customUsers", userService.findFullName(pattern));
+        }
+        return "userList";
+    }
+
 
     @RequestMapping(value = "/search_advertisement", method = RequestMethod.POST)
     public String searchAdvertisement(@RequestParam String pattern, Model model) {
@@ -349,14 +341,6 @@ public class MyController {
         return "statistics_viewed_advertisement";
     }
 
-    @RequestMapping(value = "/search_cook", method = RequestMethod.POST)
-    public String searchCook(@RequestParam String pattern, Model model) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String login = user.getUsername();
-        model.addAttribute("login", login);
-        model.addAttribute("cook", cookService.findByPattern(pattern, null));
-        return "cookList";
-    }
 
     @RequestMapping(value = "/search_cooked_order", method = RequestMethod.POST)
     public String searchCookedOrder(@RequestParam String pattern, Model model) {
@@ -372,7 +356,7 @@ public class MyController {
     public String searchDish(@RequestParam String pattern, Model model) {
 
         model.addAttribute("dishes", dishService.findByPattern(pattern));
-       // model.addAttribute("pattern", pattern);
+        // model.addAttribute("pattern", pattern);
 
 
         return "main";
@@ -554,31 +538,6 @@ public class MyController {
         return "cook_add_page";
     }
 
-    @RequestMapping(value = "/cook/add", method = RequestMethod.POST)
-    public String cookAdd(@RequestParam String name) {
-
-        Cook cook = new Cook(name);
-        cookService.addCook(cook);
-        return "redirect:/cookList";
-    }
-
-    @RequestMapping("/cookList")
-    public String cookList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String login = user.getUsername();
-
-        if (page < 0) page = 0;
-
-        List<Cook> cookList = cookService
-                .findAll(new PageRequest(page, ITEMS_PER_PAGE_COOK, Sort.Direction.DESC, "id"));
-
-        model.addAttribute("allPages", page);
-        model.addAttribute("cook", cookList);
-        model.addAttribute("allPages", getPageCountCook());
-        model.addAttribute("login", login);
-
-        return "cookList";
-    }
 
     @RequestMapping("/order_for_cooks")
     public String orderForCooks(Model model) {
@@ -607,28 +566,24 @@ public class MyController {
     }
 
 
-
     @RequestMapping(value = "/cooked_order/{id}")
     public String cookedOrderNewOrder(@PathVariable("id") long id) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
+        CustomUser cook = userService.getUserByLogin(login);
+        Order order = orderService.findOne(id);
+        long[] id_dish = new long[order.getDishes().size()];
+        int i = 0;
+        for (Dish dish : order.getDishes()) {
+            id_dish[i] = dish.getId();
+            i++;
+        }
 
-            Order order = orderService.findOne(id);
-            long[] id_dish = new long[order.getDishes().size()];
-            int i = 0;
-            for (Dish dish : order.getDishes()) {
-                id_dish[i] = dish.getId();
-                i++;
-            }
+        CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
+                cook, dishService.findArrayId(id_dish), order.getTotalCookingTime());
 
-            List<Cook> cooks = cookService.findAll();
-            //переделать с рандом на конкрет. повара
-            int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
-            CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
-                    cooks.get(random), dishService.findArrayId(id_dish), order.getTotalCookingTime());
-
-            cookedOrderService.addCookedOrder(cookedOrder);
-            orderService.deleteOrder(id);
+        cookedOrderService.addCookedOrder(cookedOrder);
+        orderService.deleteOrder(id);
 
         return "redirect:/order_for_cooks";
 
@@ -637,114 +592,107 @@ public class MyController {
 
     @RequestMapping(value = "/cooked_order_exit/{id}")
     public String cookedOrderExit(@PathVariable("id") long id) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
+        CustomUser cook = userService.getUserByLogin(login);
+        Order order = orderService.findOne(id);
+        long[] id_dish = new long[order.getDishes().size()];
+        int i = 0;
+        for (Dish dish : order.getDishes()) {
+            id_dish[i] = dish.getId();
+            i++;
+        }
 
-            Order order = orderService.findOne(id);
-            long[] id_dish = new long[order.getDishes().size()];
-            int i = 0;
-            for (Dish dish : order.getDishes()) {
-                id_dish[i] = dish.getId();
-                i++;
-            }
+        CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
+                cook, dishService.findArrayId(id_dish), order.getTotalCookingTime());
 
-            List<Cook> cooks = cookService.findAll();
-            //переделать с рандом на конкрет. повара
-            int random = (ThreadLocalRandom.current().nextInt(cooks.size()));
-            CookedOrder cookedOrder = new CookedOrder(order.getTablet().getNumber(),
-                    cooks.get(random), dishService.findArrayId(id_dish), order.getTotalCookingTime());
-
-            cookedOrderService.addCookedOrder(cookedOrder);
-            orderService.deleteOrder(id);
+        cookedOrderService.addCookedOrder(cookedOrder);
+        orderService.deleteOrder(id);
 
         return "redirect:/enter_cook";
 
-    }
-
-    @RequestMapping(value = "/cook/delete", method = RequestMethod.POST)
-    public ResponseEntity<Void> deleteCook(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
-        if (toDelete != null && toDelete.length > 0)
-            cookService.deleteCookes(toDelete);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     //...OrderController
 
 
-    @RequestMapping(value = "/made/order_bonus", method = RequestMethod.POST)
+    @RequestMapping(value = "/made_order_bonus", method = RequestMethod.POST)
     public String orderCookBonus(Model model, @RequestParam(value = "toOrder[]") long[] id) {
 
+        if (id.length > 0) {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String login = user.getUsername();
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String login = user.getUsername();
+            CustomUser customUser = userService.getUserByLogin(login);
+            int bonus = customUser.getBonus();
 
-        CustomUser customUser = userService.getUserByLogin(login);
-        int bonus = customUser.getBonus();
+            List<Tablet> tablet = tabletService.findAll();
+            int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
 
-        List<Tablet> tablet = tabletService.findAll();
-        int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
-        Order order = null;
-        List<Dish> dishList = dishService.findArrayId(id);
-        for (Dish dish : dishList) {
-            if (dish.getBonus() <= bonus) {
-                bonus = bonus - dish.getBonus();
+            List<Dish> dishList = dishService.findArrayId(id);
+            for (Dish dish : dishList) {
+                if (dish.getBonus() <= bonus) {
+                    bonus = bonus - dish.getBonus();
+                }
             }
-        }
-        customUser.setBonus(bonus + dishList.size());
-        userService.addUser(customUser);
+            customUser.setBonus(bonus + dishList.size());
+            userService.addUser(customUser);
+            Order order = null;
+            try {
+                order = new Order(tablet.get(random), dishList, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            orderService.addOrder(order);
 
-        try {
-            order = new Order(tablet.get(random), dishList, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        orderService.addOrder(order);
+            String s = "";
+            for (long i : id) {
+                s += "" + i + " ";
+            }
 
-        String s = "";
-        for (long i : id) {
-            s += "" + i + " ";
+            model.addAttribute("dishesArrayId", dishList);
+            model.addAttribute("Id", s);
+            model.addAttribute("login", login);
         }
-
-        model.addAttribute("dishesArrayId", dishList);
-        model.addAttribute("Id", s);
-        model.addAttribute("login", login);
         return "order_cook";
     }
 
 
-    @RequestMapping(value = "/made/order", method = RequestMethod.POST)
-    public String orderCook(Model model, @RequestParam(value = "toOrder[]") long[] id) {
+    @RequestMapping(value = "/made_order", method = RequestMethod.POST)
+    public String orderCook(Model model, @RequestParam(required = false, value = "toOrder[]") long[] id) {
 
-        List<Tablet> tablet = tabletService.findAll();
-        int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
-        Order order = null;
-        List<Dish> dishList = dishService.findArrayId(id);
+        if (id.length > 0) {
+            List<Tablet> tablet = tabletService.findAll();
+            int random = (ThreadLocalRandom.current().nextInt(tablet.size()));
+            Order order = null;
+            List<Dish> dishList = dishService.findArrayId(id);
 
-        if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String login = user.getUsername();
-            CustomUser customUser = userService.getUserByLogin(login);
-            customUser.setBonus(customUser.getBonus() + dishList.size());
-            userService.updateUser(customUser);
-            model.addAttribute("login", login);
+            if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+                User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String login = user.getUsername();
+                CustomUser customUser = userService.getUserByLogin(login);
+                customUser.setBonus(customUser.getBonus() + dishList.size());
+                userService.updateUser(customUser);
+                model.addAttribute("login", login);
+            }
+
+
+            try {
+                order = new Order(tablet.get(random), dishList, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            orderService.addOrder(order);
+
+            String s = "";
+            for (long i : id) {
+                s += "" + i + " ";
+            }
+
+            model.addAttribute("dishesArrayId", dishList);
+            model.addAttribute("Id", s);
         }
-
-
-        try {
-            order = new Order(tablet.get(random), dishList, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        orderService.addOrder(order);
-
-        String s = "";
-        for (long i : id) {
-            s += "" + i + " ";
-        }
-
-        model.addAttribute("dishesArrayId", dishList);
-        model.addAttribute("Id", s);
         return "order_cook";
     }
 
@@ -770,8 +718,8 @@ public class MyController {
     }
 
 
-    @RequestMapping(value = "/advertisement/view", method = RequestMethod.POST)
-    public String onView(Model model, @RequestParam("IdDishes") String idDishes) {
+    @RequestMapping(value = "/advertisement_view", method = RequestMethod.POST)
+    public String onView(Model model, @RequestParam(required = false, value = "IdDishes") String idDishes) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
         if (advertisementPhotos.size() > 0) {
@@ -789,28 +737,31 @@ public class MyController {
             model.addAttribute("photo_id", id);
         } else {
 
-            String[] array = idDishes.split(" ");
-            long[] arrayId = new long[array.length];
-            for (int i = 0; i < array.length; i++) {
-                arrayId[i] = Long.parseLong(array[i]);
+            if (idDishes != null) {
+
+                String[] array = idDishes.split(" ");
+                long[] arrayId = new long[array.length];
+                for (int i = 0; i < array.length; i++) {
+                    arrayId[i] = Long.parseLong(array[i]);
+                }
+
+
+                List<Dish> dishes = dishService.findArrayId(arrayId);
+                long sumDuration = 0;
+                for (Dish dish : dishes) {
+                    sumDuration += dish.getDuration();
+                }
+                NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
+                noAdvertisementService.addNoAdvertisement(noAdvertisement);
+
             }
-
-
-            List<Dish> dishes = dishService.findArrayId(arrayId);
-            long sumDuration = 0;
-            for (Dish dish : dishes) {
-                sumDuration += dish.getDuration();
-            }
-            NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
-            noAdvertisementService.addNoAdvertisement(noAdvertisement);
-
         }
 
         return "advertisement_view";
     }
 
 
-    @RequestMapping(value = "/advertisement/view/{photo_id}")
+    @RequestMapping(value = "/advertisement_view_{photo_id}")
     public String onViewNext(Model model, @PathVariable("photo_id") long id) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
@@ -849,7 +800,7 @@ public class MyController {
     }
 
 
-    @RequestMapping(value = "/advertisement/viewed/{photo_id}")
+    @RequestMapping(value = "/advertisement_viewed_{photo_id}")
     public String onViewBack(Model model, @PathVariable("photo_id") long id) {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
@@ -890,7 +841,7 @@ public class MyController {
     }
 
 
-    @RequestMapping("/advertisement/add_page")
+    @RequestMapping("/advertisement_add_page")
     public String advertisementAddPage() {
 
         return "advertisement_add_page";
@@ -1024,7 +975,16 @@ public class MyController {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String login = user.getUsername();
+        CustomUser client = userService.getUserByLogin(login);
+        if (client.getBonus() != null) {
+            int bonus = client.getBonus();
+            if (bonus >= 10) {
+                model.addAttribute("bonus", bonus);
+            }
+        }
         model.addAttribute("login", login);
+        model.addAttribute("bonus_user", client.getBonus());
+        model.addAttribute("dishes", dishService.findByDiscount());
         return "user";
     }
 
@@ -1067,10 +1027,6 @@ public class MyController {
         return (totalCount / ITEMS_PER_PAGE_COUNT_ORDERS) + ((totalCount % ITEMS_PER_PAGE_COUNT_ORDERS > 0) ? 1 : 0);
     }
 
-    private long getPageCountCook() {
-        long totalCount = cookService.count();
-        return (totalCount / ITEMS_PER_PAGE_COOK) + ((totalCount % ITEMS_PER_PAGE_COOK > 0) ? 1 : 0);
-    }
 
     private void responsePhoto(HttpServletResponse response, byte[] content) throws IOException {
         response.setContentType("photo/png");
@@ -1124,13 +1080,46 @@ public class MyController {
             String login = user.getUsername();
             model.addAttribute("login", login);
             CustomUser customUser = userService.getUserByLogin(login);
-            if(customUser.getBonus() != null) {
+            if (customUser.getBonus() != null) {
                 int bonus = customUser.getBonus();
                 if (bonus >= 15) {
                     model.addAttribute("bonus", bonus);
                 }
             }
         }
+    }
+
+    private void infoForCook(Model model) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String login = user.getUsername();
+        int count_order = 0;
+        int count_cooking_order = 0;
+        int totalCookingTime = 0;
+        int totalCookingTimeNewOrder = 0;
+        int countDishesNewOrder = 0;
+        int countDishesCookingOrder = 0;
+        List<Order> orders = orderService.findAll();
+        for (Order order : orders) {
+            if (!order.getCooking()) {
+                count_order += 1;
+                totalCookingTimeNewOrder += order.getTotalCookingTime();
+                countDishesNewOrder += order.getDishes().size();
+
+            } else {
+                count_cooking_order += 1;
+                totalCookingTime += order.getTotalCookingTime();
+                countDishesCookingOrder += order.getDishes().size();
+            }
+
+        }
+
+        model.addAttribute("login", login);
+        model.addAttribute("count_order", count_order);
+        model.addAttribute("count_cooking_order", count_cooking_order);
+        model.addAttribute("totalCookingTimeNewOrder", totalCookingTimeNewOrder);
+        model.addAttribute("totalCookingTime", totalCookingTime);
+        model.addAttribute("countDishesNewOrder", countDishesNewOrder);
+        model.addAttribute("countDishesCookingOrder", countDishesCookingOrder);
     }
 
 }
