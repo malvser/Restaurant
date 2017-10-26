@@ -31,10 +31,10 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/name">"Название ресторана"</a>
+            <a class="navbar-brand">"Название ресторана"</a>
             <a class="navbar-brand" href="/admin">Админ</a>
             <a class="navbar-brand" href="/enter_cook">Повар</a>
-            <a class="navbar-brand" href="/">Клиент</a>
+            <a class="navbar-brand" href="/user">Клиент</a>
 
 
         </div>
