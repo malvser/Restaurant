@@ -35,13 +35,15 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">×</span></button>
-                <div class="modal-lg">Photo</div>
+                <div class="modal-lg"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    Фото</em></font>
+                </div>
             </div>
             <div class="modal-body">
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -94,14 +96,12 @@
 
             <ul class="nav nav-sidebar">
 
-                <li><a href="/enter_cook"> <b>Просмотр состояния заказов</b></a></li>
+                <li><a href="/enter_cook_admin"> <b>Просмотр состояния заказов</b></a></li>
                 <li class="active"><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
                 <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
                 <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
-                <li><a href="/advertisement/add_page"><b>Добавить рекламу</b></a></li>
+                <li><a href="/advertisement_add_page"><b>Добавить рекламу</b></a></li>
                 <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
-                <li><a href="/cook_add"><b>Добавить повара</b></a></li>
-                <li><a href="/cookList"><b>Список поваров</b></a></li>
                 <li><a href="/add_tablet"><b>Добавить стол</b></a></li>
                 <li><a href="/tabletList"><b>Список столов</b></a></li>
                 <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
@@ -139,7 +139,7 @@
                                 Стол</em></font>
                             </th>
                             <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Имя повара</em></font>
+                                ФИО повара</em></font>
                             </th>
                             <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Готовка (мин.)</em></font>
@@ -151,12 +151,13 @@
                         </thead>
                         <form class="form-control" enctype="multipart/form-data"  method="post">
                             <c:forEach var="item" items="${cookedOrderList}">
+                                <jsp:useBean id="item" scope="page" type="malov.serg.Model.CookedOrder"/>
                                 <tr>
                                     <td><input type="checkbox" align="center" name="toDelete[]" value="${item.id}"/>
                                     </td>
                                     <td><c:out value="${item.date}"/>
                                     <td><c:out value="${item.tabletNumber}"/>
-                                    <td><c:out value="${item.cookCookedOrder.name}"/>
+                                    <td><c:out value="${item.cook.full_name}"/>
                                     <td><c:out value="${item.cookingTimeSeconds}"/>
                                         <c:forEach var="item2" items="${item.cookingDishes}">
                                             <table class="table table-striped">

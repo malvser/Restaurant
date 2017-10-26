@@ -73,14 +73,12 @@
 
             <ul class="nav nav-sidebar">
 
-                <li><a href="/enter_cook"> <b>Просмотр состояния заказов</b></a></li>
+                <li><a href="/enter_cook_admin"> <b>Просмотр состояния заказов</b></a></li>
                 <li><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
                 <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
                 <li class="active"><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
-                <li><a href="/advertisement/add_page"><b>Добавить рекламу</b></a></li>
+                <li><a href="/advertisement_add_page"><b>Добавить рекламу</b></a></li>
                 <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
-                <li><a href="/cook_add"><b>Добавить повара</b></a></li>
-                <li><a href="/cookList"><b>Список поваров</b></a></li>
                 <li><a href="/add_tablet"><b>Добавить стол</b></a></li>
                 <li><a href="/tabletList"><b>Список столов</b></a></li>
                 <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
