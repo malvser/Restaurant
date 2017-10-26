@@ -38,19 +38,22 @@
 
                 <ul class="nav navbar-nav navbar-right">
 
+                    <c:if test="${login ne null}">
+                        <li> <a>Ваш логин: ${login}</a></li>
+                        <li><a href="/logout">Выход</a></li>
+                    </c:if>
 
-                    <li><a href="/logout">Выход</a></li>
 
                 </ul>
 
 
 
-                <form class="navbar-form navbar-left" role="search" action="/advertisement/viewed/${photo_id}" method="post">
+                <form class="navbar-form navbar-left" role="search" action="/advertisement_viewed_${photo_id}" method="post">
 
 
                     <button type="submit" class="btn btn-primary">Предыдущая реклама</button>
                 </form>
-                <form class="navbar-form navbar-left" action="/advertisement/view/${photo_id}" method="post">
+                <form class="navbar-form navbar-left" action="/advertisement_view_${photo_id}" method="post">
 
 
                     <button type="submit"  class="btn btn-primary">Следующая реклама</button>

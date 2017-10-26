@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 
@@ -35,13 +36,15 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">×</span></button>
-                <div class="modal-lg">Photo</div>
+                <div class="modal-lg"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    Фото</em></font>
+                </div>
             </div>
             <div class="modal-body">
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -60,16 +63,12 @@
             </button>
             <a id="main" class="navbar-brand" href="/">Главная</a>
 
-            <!-- <form class="navbar-form navbar-left" method="post">
-                 <button class="btn btn-success" type="button" id="modal" >Сделать заказ</button>
-                  </form>
-             -->
 
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/dishesList">Сброс поиска</a></li>
-                <li> <a>Ваш логин: ${login}</a></li>
+                <li><a>Ваш логин: ${login}</a></li>
                 <li><a href="/logout">Выход</a></li>
             </ul>
 
@@ -86,27 +85,27 @@
 </nav>
 
 
-<div class="container-fluid" >
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
 
 
             <ul class="nav nav-sidebar">
 
+                <li><a href="/enter_cook_admin"> <b>Просмотр состояния заказов</b></a></li>
                 <li><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
                 <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
                 <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
-                <li><a href="/advertisement/add_page"><b>Добавить рекламу</b></a></li>
+                <li><a href="/advertisement_add_page"><b>Добавить рекламу</b></a></li>
                 <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
-                <li><a href="/cook_add"><b>Добавить повара</b></a></li>
-                <li><a href="/cookList"><b>Список поваров</b></a></li>
                 <li><a href="/add_tablet"><b>Добавить стол</b></a></li>
                 <li><a href="/tabletList"><b>Список столов</b></a></li>
                 <li><a href="/add_dish"><b>Добавить блюдо</b></a></li>
                 <li class="active"><a href="/dishesList"><b>Список блюд</b></a></li>
+                <li><a href="/register_admin"><b>Создать пользователя</b></a></li>
+                <li><a href="/userlist"><b>Список пользователей</b></a></li>
 
             </ul>
-
 
 
         </div>
@@ -115,30 +114,34 @@
         <div class="col-sm-8 col-sm-offset-5 col-md-10 col-md-offset-2 main">
 
 
-            <form  method="post"> <!-- action="/order" -->
+            <form method="post"> <!-- action="/order" -->
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th width="10%" align="right">
-                                <button class="btn btn-danger" type="button" id="modal_dish" >Удалить</button>
+                                <button class="btn btn-danger" type="button" id="modal_dish"> Удалить </button>
 
                             </th>
+
 
                             <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Имя</em></font>
                             </th>
-                            <th width="25%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Вес</em></font>
                             </th>
-                            <th width="25%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Стоимость</em></font>
-                            </th>
                             <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Скидка</em></font>
+                                Цена</em></font>
                             </th>
-                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                            <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Время готовки</em></font>
+                            </th>
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Скидка %</em></font>
+                            </th>
+                            <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                                Бонусы для скидки</em></font>
                             </th>
                             <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Фото</em></font>
@@ -146,18 +149,20 @@
 
                         </tr>
                         </thead>
-                        <form class="form-control" enctype="multipart/form-data"  method="post">
+
+                        <form class="form-control" enctype="multipart/form-data" method="post">
                             <c:forEach var="dish" items="${dishes}">
-                            <jsp:useBean id="dish" scope="page" type="malov.serg.Model.Dish" />
+                                <jsp:useBean id="dish" scope="page" type="malov.serg.Model.Dish"/>
                                 <tr>
-                                    <td><input type="checkbox" align="center"  name="toOrder[]" value="${dish.id}"/>
+                                    <td><input type="checkbox" align="center" name="toOrder[]" value="${dish.id}"/>
                                     </td>
 
                                     <td><c:out value="${dish.name}"/>
                                     <td><c:out value="${dish.weight}"/>
                                     <td><c:out value="${dish.cost}"/>
-                                    <td><c:out value="${dish.discount}"/>
                                     <td><c:out value="${dish.duration}"/>
+                                    <td><c:out value="${dish.discount}"/>
+                                    <td><c:out value="${dish.bonus}"/>
                                     <td>
                                         <div id="aaa"
                                              style="border: 0px; display: inline-block; position: relative; overflow: hidden;">
@@ -193,11 +198,55 @@
 </div>
 
 
+
+
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/photo.js"></script>
 <script src="resources/js/deleteDishes.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 
+<script>
+
+    $('#edit').click(function () {
+
+        if ($('[type="checkbox"]').is(':checked')) {
+
+            var date = {'toOrder[]': []};
+            $(":checked").each(function () {
+                date['toOrder[]'].push($(this).val());
+            });
+
+            function buildElement(tagName, props) {
+                var element = document.createElement(tagName);
+                for (var propName in props) element[propName] = props[propName];
+                return element;
+            }
+
+            function submit(link, props) {
+                var form = buildElement('form', {
+                    method: 'post',
+                    action: link
+                });
+                for (var propName in props) form.appendChild(
+                        buildElement('input', {
+                            type: 'hidden',
+                            name: propName,
+                            value: props[propName]
+                        })
+                );
+                form.style.display = 'none';
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            console.log("date = " + date);
+            submit('/add_dish', date);
+
+
+        }
+    });
+
+</script>
 
 </body>
 </html>
