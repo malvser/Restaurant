@@ -1,6 +1,8 @@
 package malov.serg.Model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class CustomUser {
@@ -11,12 +13,15 @@ public class CustomUser {
     private String login;
     private String password;
 
+    @OneToMany(mappedBy = "cookCookedOrder", cascade = CascadeType.ALL)
+    private List<CookedOrder> cookedOrders = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
     private Integer bonus;
     private String email;
     private String phone;
-
+    private String full_name;
     public CustomUser(String login, String password, UserRole role) {
         this.login = login;
         this.password = password;
@@ -40,7 +45,33 @@ public class CustomUser {
         this.bonus = bonus;
     }
 
+    public CustomUser(String login, String password, UserRole role, String email, String phone, Integer bonus, String full_name) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.phone = phone;
+        this.bonus = bonus;
+        this.full_name = full_name;
+    }
+
     public CustomUser() {}
+
+    public String getFull_name() {
+        return full_name;
+    }
+
+    public void setFull_name(String full_name) {
+        this.full_name = full_name;
+    }
+
+    public List<CookedOrder> getCookedOrders() {
+        return cookedOrders;
+    }
+
+    public void setCookedOrders(List<CookedOrder> cookedOrders) {
+        this.cookedOrders = cookedOrders;
+    }
 
     public Integer getBonus() {
         return bonus;
