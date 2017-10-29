@@ -67,7 +67,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/advertisementList">Сброс поиска</a></li>
-                <li> <a>Ваш логин: ${login}</a></li>
+                <li><a>Ваш логин: ${login}</a></li>
                 <li><a href="/logout">Выход</a></li>
             </ul>
 
@@ -84,7 +84,7 @@
 </nav>
 
 
-<div class="container-fluid" >
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
 
@@ -107,19 +107,21 @@
             </ul>
 
 
-
         </div>
 
 
         <div class="col-sm-8 col-sm-offset-5 col-md-10 col-md-offset-2 main">
 
-            <form action="/advertisement/delete"  method="post">
+            <form>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th width="10%" align="right">
-                                <button class="btn btn-danger" type="button" id="modal" >Удалить</button>
+                                <button class="btn btn-danger" type="button" id="modal">Удалить</button>
+
+                            </th>
+                            <th>
 
                             </th>
 
@@ -141,11 +143,23 @@
 
                         </tr>
                         </thead>
-                        <form class="form-control" enctype="multipart/form-data" action="/advertisement/delete"  method="post">
+                        <form class="form-control" enctype="multipart/form-data" method="post">
+
+
                             <c:forEach var="item" items="${advertisement}">
+
                                 <tr>
                                     <td><input type="checkbox" align="center" name="toDelete[]" value="${item.id}"/>
                                     </td>
+                                    <th width="1%" align="right">
+                                        <button class="btn btn-success" OnClick="sendPost(this);" type="button"
+                                                name="edit"
+                                                value="${item.id}">
+                                            Изменить
+                                        </button>
+
+                                    </th>
+
                                     <td><c:out value="${item.name}"/>
                                     <td><c:out value="${item.cost}"/>
                                     <td><c:out value="${item.amount}"/>
@@ -161,7 +175,9 @@
                                     </td>
                                     </td>
                                 </tr>
+
                             </c:forEach>
+
                         </form>
                     </table>
                 </div>
@@ -171,7 +187,8 @@
                 <ul class="pagination">
                     <c:if test="${allPages ne null}">
                         <c:forEach var="i" begin="1" end="${allPages}">
-                            <li><a href="/advertisementList?page=<c:out value="${i - 1}"/>"><c:out value="${i}"/></a></li>
+                            <li><a href="/advertisementList?page=<c:out value="${i - 1}"/>"><c:out value="${i}"/></a>
+                            </li>
                         </c:forEach>
                     </c:if>
                 </ul>
@@ -190,8 +207,14 @@
 <script src="resources/js/photo.js"></script>
 <script src="resources/js/deleteAdvertisement.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
+<script>
 
+    function sendPost(id) {
 
+        window.location.href = '/advertisement_edit_page_' + id.value;
+
+    }
+</script>
 </body>
 </html>
 

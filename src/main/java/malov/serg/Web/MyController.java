@@ -841,6 +841,26 @@ public class MyController {
     }
 
 
+    @RequestMapping(value = "/advertisement_edit_page_{advertisement_id}")
+    public String advertisementEdit(Model model, @PathVariable("advertisement_id") long id) {
+
+        AdvertisementPhoto advertisementPhoto = advertisementPhotoService.findOne(id);
+        byte[] photo = advertisementPhoto.getPhoto();
+        String name = advertisementPhoto.getName();
+        long cost = advertisementPhoto.getCost();
+        long amount = advertisementPhoto.getAmount();
+        long total_amount = advertisementPhoto.getTotal_amount();
+
+        model.addAttribute("photo",photo);
+        model.addAttribute("name",name);
+        model.addAttribute("cost",cost);
+        model.addAttribute("amount",amount);
+        model.addAttribute("total_amount",total_amount);
+        model.addAttribute("advertisement_id", id);
+
+        return "advertisement_add_page";
+    }
+
     @RequestMapping("/advertisement_add_page")
     public String advertisementAddPage() {
 
@@ -854,23 +874,40 @@ public class MyController {
                           HttpServletResponse response,
                           @RequestParam long cost,
                           @RequestParam long amount,
-                          @RequestParam long total_amount) {
+                          @RequestParam long total_amount,
+                          @RequestParam(required = false) Long advertisement_id) {
 
         if (name == null || body_photo == null || cost == 0 || amount == 0 || total_amount == 0) {
             return "redirect:/advertisementList";
         }
-        try {
-            AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
-                    cost, amount, total_amount);
+        if(advertisement_id != null){
+            AdvertisementPhoto advertisementPhoto = advertisementPhotoService.findOne(advertisement_id);
+            advertisementPhoto.setAmount(amount);
+            advertisementPhoto.setTotal_amount(total_amount);
+            advertisementPhoto.setName(name);
+            advertisementPhoto.setCost(cost);
+            try {
+                advertisementPhoto.setPhoto(body_photo.getBytes());
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
             advertisementPhotoService.addAdvertisement(advertisementPhoto);
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            e.printStackTrace();
-        }
+        }else {
 
+            try {
+                AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
+                        cost, amount, total_amount);
+                advertisementPhotoService.addAdvertisement(advertisementPhoto);
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
+        }
 
         return "redirect:/advertisementList";
     }
+
 
 
     @RequestMapping("/photo/advertisement/{photo_id}")
