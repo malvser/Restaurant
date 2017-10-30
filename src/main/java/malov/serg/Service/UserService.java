@@ -9,8 +9,10 @@ public interface UserService {
     CustomUser getUserByLogin(String login);
     boolean existsByLogin(String login);
     void addUser(CustomUser customUser);
+    CustomUser findOne(long id);
     void updateUser(CustomUser customUser);
     List<CustomUser> findAll(Pageable pageable);
     List<CustomUser> findFullName(String full_name);
+    void deleteDishes(long[] idList);
     long count();
 }

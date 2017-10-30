@@ -124,7 +124,7 @@
 
                             </th>
 
-
+                            <th></th>
                             <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Имя</em></font>
                             </th>
@@ -157,6 +157,14 @@
                                     <td><input type="checkbox" align="center" name="toOrder[]" value="${dish.id}"/>
                                     </td>
 
+                                    <th width="1%" align="right">
+                                        <button class="btn btn-success" OnClick="sendPost(this);" type="button"
+                                                name="edit"
+                                                value="${dish.id}">
+                                            Изменить
+                                        </button>
+
+                                    </th>
                                     <td><c:out value="${dish.name}"/>
                                     <td><c:out value="${dish.weight}"/>
                                     <td><c:out value="${dish.cost}"/>
@@ -198,54 +206,19 @@
 </div>
 
 
-
-
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/photo.js"></script>
 <script src="resources/js/deleteDishes.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
 
+
 <script>
 
-    $('#edit').click(function () {
+    function sendPost(id) {
 
-        if ($('[type="checkbox"]').is(':checked')) {
+        window.location.href = '/dish_edit_page_' + id.value;
 
-            var date = {'toOrder[]': []};
-            $(":checked").each(function () {
-                date['toOrder[]'].push($(this).val());
-            });
-
-            function buildElement(tagName, props) {
-                var element = document.createElement(tagName);
-                for (var propName in props) element[propName] = props[propName];
-                return element;
-            }
-
-            function submit(link, props) {
-                var form = buildElement('form', {
-                    method: 'post',
-                    action: link
-                });
-                for (var propName in props) form.appendChild(
-                        buildElement('input', {
-                            type: 'hidden',
-                            name: propName,
-                            value: props[propName]
-                        })
-                );
-                form.style.display = 'none';
-                document.body.appendChild(form);
-                form.submit();
-            }
-
-            console.log("date = " + date);
-            submit('/add_dish', date);
-
-
-        }
-    });
-
+    }
 </script>
 
 </body>

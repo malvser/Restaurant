@@ -119,11 +119,11 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th width="10%" align="right">
-                                <button class="btn btn-danger" type="button" id="modal_dish" >Удалить</button>
+                            <th width="5%" align="right">
+                                <button class="btn btn-danger" type="button" id="delete" >Удалить</button>
 
                             </th>
-
+                            <th></th>
                             <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Логин</em></font>
                             </th>
@@ -150,9 +150,16 @@
                             <c:forEach var="customUser" items="${customUsers}">
                                 <jsp:useBean id="customUser" scope="page" type="malov.serg.Model.CustomUser" />
                                 <tr>
-                                    <td><input type="checkbox" align="center"  name="toOrder[]" value="${dish.id}"/>
+                                    <td><input type="checkbox" align="center"  name="toOrder[]" value="${customUser.id}"/>
                                     </td>
+                                    <th width="1%" align="right">
+                                        <button class="btn btn-success" OnClick="sendPost(this);" type="button"
+                                                name="edit"
+                                                value="${customUser.id}">
+                                            Изменить
+                                        </button>
 
+                                    </th>
                                     <td><c:out value="${customUser.login}"/>
                                     <td><c:out value="${customUser.role}"/>
                                     <td><c:out value="${customUser.full_name}"/>
@@ -190,9 +197,16 @@
 
 <script src="resources/js/bootstrap.min.js"></script>
 <script src="resources/js/photo.js"></script>
-<script src="resources/js/deleteDishes.js"></script>
+<script src="resources/js/deleteUser.js"></script>
 <script src="resources/jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
+<script>
 
+    function sendPost(id) {
+
+        window.location.href = '/register_edit_admin_' + id.value;
+
+    }
+</script>
 
 </body>
 </html>

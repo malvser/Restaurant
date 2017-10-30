@@ -33,9 +33,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CustomUser findOne(long id) {
+        return userRepository.findOne(id);
+    }
+
+    @Override
     @Transactional
     public void updateUser(CustomUser customUser) {
         userRepository.save(customUser);
+    }
+
+    @Transactional
+    public void deleteDishes(long[] idList) {
+        for (long id : idList)
+            userRepository.delete(id);
     }
 
     @Transactional(readOnly = true)

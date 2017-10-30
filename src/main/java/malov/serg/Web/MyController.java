@@ -93,6 +93,23 @@ public class MyController {
         return "register_for_admin";
     }
 
+
+    @RequestMapping(value = "/register_edit_admin_{user_id}")
+    public String userEdit(Model model, @PathVariable("user_id") long id) {
+
+        CustomUser customUser = userService.findOne(id);
+        model.addAttribute("bonus", customUser.getBonus());
+        model.addAttribute("login", customUser.getLogin());
+        model.addAttribute("email", customUser.getEmail());
+        model.addAttribute("full_name", customUser.getFull_name());
+        model.addAttribute("phone", customUser.getPhone());
+        model.addAttribute("role", customUser.getRole());
+        model.addAttribute("userRole", UserRole.values());
+        model.addAttribute("user_id", id);
+
+        return "register_for_admin";
+    }
+
     @RequestMapping("/userlist")
     public String userList(Model model, @RequestParam(required = false, defaultValue = "0") Integer page) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -140,30 +157,76 @@ public class MyController {
                           @RequestParam String email,
                           @RequestParam String phone,
                           @RequestParam String full_name,
+                          @RequestParam(required = false) Long user_id,
+                          @RequestParam Integer bonus,
                           Model model) {
-        if (userService.existsByLogin(login)) {
+        if (userService.existsByLogin(login) && user_id == null) {
             model.addAttribute("exists", true);
             model.addAttribute("userRole", UserRole.values());
             return "register_for_admin";
         }
-
         ShaPasswordEncoder encoder = new ShaPasswordEncoder();
+
         /*BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String passwordHash = bCryptPasswordEncoder.encode(password);*/
         String passHash = encoder.encodePassword(password, null);
-        CustomUser dbUser;
 
-        if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0, full_name);
-        } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
-            dbUser = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0, full_name);
-        } else {
-            dbUser = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
+        if(user_id != null){
+            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
+                CustomUser user = userService.findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.ADMIN);
+                userService.addUser(user);
+            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
+                CustomUser user = userService.findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.COOK);
+                userService.addUser(user);
+            } else {
+                CustomUser user = userService.findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.USER);
+                userService.addUser(user);
+
+            }
+
+        }else{
+
+            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
+                CustomUser user = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0, full_name);
+                userService.addUser(user);
+            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
+                CustomUser user = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0, full_name);
+                userService.addUser(user);
+            } else {
+                CustomUser user = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
+                userService.addUser(user);
+            }
+
         }
 
-        userService.addUser(dbUser);
 
-        return "redirect:/";
+
+
+
+
+
+        return "redirect:/userlist";
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -238,6 +301,24 @@ public class MyController {
         return "dishesList";
     }
 
+
+    @RequestMapping(value = "/dish_edit_page_{dish_id}")
+    public String dishEdit(Model model, @PathVariable("dish_id") long id) {
+
+        Dish dish = dishService.findOne(id);
+        model.addAttribute("bonus", dish.getBonus());
+        model.addAttribute("cost", dish.getCost());
+        model.addAttribute("discount", dish.getDiscount());
+        model.addAttribute("duration", dish.getDuration());
+        model.addAttribute("name", dish.getName());
+        model.addAttribute("weight", dish.getWeight());
+        model.addAttribute("type", dish.getType());
+        model.addAttribute("photo", dish.getPhoto());
+        model.addAttribute("dish_id", id);
+
+        return "dish_add_page";
+    }
+
     @RequestMapping(value = "/dishes/delete", method = RequestMethod.POST)
     public ResponseEntity<Void> deleteDishes(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
         if (toDelete != null && toDelete.length > 0)
@@ -247,21 +328,11 @@ public class MyController {
     }
 
 
+
     @RequestMapping("/add_dish")
-    public String dishAddPage(Model model, @RequestParam(required = false) Long id) {
+    public String dishAddPage(Model model) {
 
-        if (id != null) {
-            Dish dish = dishService.findOne(id);
 
-            model.addAttribute("bonus", dish.getBonus());
-            model.addAttribute("cost", dish.getCost());
-            model.addAttribute("discount", dish.getDiscount());
-            model.addAttribute("duration", dish.getDuration());
-            model.addAttribute("name", dish.getName());
-            model.addAttribute("weight", dish.getWeight());
-            model.addAttribute("type", dish.getType());
-            model.addAttribute("photo", dish.getPhoto());
-        }
         return "dish_add_page";
     }
 
@@ -276,18 +347,37 @@ public class MyController {
                           @RequestParam int discount,
                           @RequestParam int bonus,
                           @RequestParam int duration,
-                          @RequestParam String type) {
+                          @RequestParam String type,
+                          @RequestParam(required = false) Long dish_id) {
 
-
-        try {
-            Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type, bonus);
+        if(dish_id != null){
+            Dish dish = dishService.findOne(dish_id);
+            dish.setBonus(bonus);
+            dish.setType(type);
+            dish.setDiscount(discount);
+            dish.setName(name);
+            dish.setCost(cost);
+            dish.setDuration(duration);
+            dish.setWeight(weight);
+            try {
+                dish.setPhoto(body_photo.getBytes());
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
             dishService.addDish(dish);
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            e.printStackTrace();
+
+        }else {
+
+            try {
+                Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type, bonus);
+                dishService.addDish(dish);
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
+
         }
-
-
         return "redirect:/dishesList";
     }
 
@@ -531,12 +621,6 @@ public class MyController {
 
     // CookController
 
-
-    @RequestMapping("/cook_add")
-    public String cookAddPage() {
-
-        return "cook_add_page";
-    }
 
 
     @RequestMapping("/order_for_cooks")
@@ -877,9 +961,7 @@ public class MyController {
                           @RequestParam long total_amount,
                           @RequestParam(required = false) Long advertisement_id) {
 
-        if (name == null || body_photo == null || cost == 0 || amount == 0 || total_amount == 0) {
-            return "redirect:/advertisementList";
-        }
+
         if(advertisement_id != null){
             AdvertisementPhoto advertisementPhoto = advertisementPhotoService.findOne(advertisement_id);
             advertisementPhoto.setAmount(amount);
@@ -1006,6 +1088,15 @@ public class MyController {
         model.addAttribute("login", login);
         return "admin";
     }
+
+    @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
+    public ResponseEntity<Void> deleteUser(@RequestParam(value = "toDelete[]", required = false) long[] toDelete) {
+        if (toDelete != null && toDelete.length > 0) {
+            userService.deleteDishes(toDelete);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @RequestMapping("/user")
     public String User(Model model) {
