@@ -2,14 +2,14 @@ package malov.serg.Model;
 
 
 
-import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="advertisement")
-@NoArgsConstructor
+
 
 public class AdvertisementPhoto {
 
@@ -25,7 +25,8 @@ public class AdvertisementPhoto {
     @OneToMany(mappedBy = "viewedAdvertisement", cascade = CascadeType.ALL)
     private List<ViewedAdvertisement> advertisementPhotos = new ArrayList<>();
 
-
+    public AdvertisementPhoto() {
+    }
 
     public AdvertisementPhoto(byte[] photo, String name, Long cost, Long amount, Long total_amount) {
         this.photo = photo;
@@ -66,6 +67,22 @@ public class AdvertisementPhoto {
 
     public long getId() {
         return id;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCost(long cost) {
+        this.cost = cost;
+    }
+
+    public void setAdvertisementPhotos(List<ViewedAdvertisement> advertisementPhotos) {
+        this.advertisementPhotos = advertisementPhotos;
     }
 }
 

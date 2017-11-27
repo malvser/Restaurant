@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void registerGlobalAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(userDetailsService)
-                .passwordEncoder(getShaPasswordEncoder());
+                .passwordEncoder(getBCryptPasswordEncoder());
     }
 
     @Override
@@ -37,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/add_tablet").hasRole("ADMIN")
                 .antMatchers("/tablet/add").hasRole("ADMIN")
                 .antMatchers("/tabletList").hasRole("ADMIN")
+                .antMatchers("/dishesList").hasRole("ADMIN")
                 .antMatchers("/tablet/delete").hasRole("ADMIN")
                 .antMatchers("/cook_add").hasRole("ADMIN")
                 .antMatchers("/cook/add").hasRole("ADMIN")
@@ -46,10 +48,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/advertisement/add_page").hasRole("ADMIN")
                 .antMatchers("/advertisement/add").hasRole("ADMIN")
                 .antMatchers("/advertisement/delete").hasRole("ADMIN")
-                .antMatchers("/enter_cook").hasAnyRole("COOK", "ADMIN")
+                .antMatchers("/enter_cook").hasRole("COOK")
                 .antMatchers("/order_for_cooks").hasRole("COOK")
                 .antMatchers("/cooked_order").hasRole("COOK")
                 .antMatchers("/director/pages").hasRole("ADMIN")
+                .antMatchers("/user").hasRole("USER")
                 .antMatchers("/register").permitAll()
                 .antMatchers("/menu").permitAll()
                 .antMatchers("/order").permitAll()
@@ -76,7 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true);
     }
 
-    private ShaPasswordEncoder getShaPasswordEncoder(){
-        return new ShaPasswordEncoder();
+    private BCryptPasswordEncoder getBCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
     }
+
+
 }

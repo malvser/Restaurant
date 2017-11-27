@@ -101,7 +101,8 @@ public class AdvertisementController {
             addViewedAdvertisement(id);
 
             model.addAttribute("photo_id", id);
-        } else if (!idDishes.equals("")) {
+        } else  {
+            if (!idDishes.equals("")) {
 
                 String[] array = idDishes.split(" ");
                 long[] arrayId = new long[array.length];
@@ -117,10 +118,9 @@ public class AdvertisementController {
                 }
                 NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
                 noAdvertisementService.addNoAdvertisement(noAdvertisement);
-
-
-        }else{
+            }
             return "redirect:/no_advertisement";
+
         }
 
         return "advertisement_view";

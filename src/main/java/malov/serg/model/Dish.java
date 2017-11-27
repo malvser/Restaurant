@@ -1,6 +1,6 @@
 package malov.serg.Model;
 
-import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Table(name="dish")
-@NoArgsConstructor
 public class Dish implements Serializable {
 
     //Fish(25), Steak(30), Soup(15), Juice(5), Water(3);
@@ -68,6 +67,9 @@ public class Dish implements Serializable {
 
     public void setPhoto(byte[] photo) {
         this.photo = photo;
+    }
+
+    public Dish() {
     }
 
     public Dish(String name, int cost, int weight, int discount) {
@@ -137,5 +139,23 @@ public class Dish implements Serializable {
         this.id = id;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 }

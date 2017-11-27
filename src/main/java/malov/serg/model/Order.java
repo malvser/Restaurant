@@ -1,9 +1,6 @@
 package malov.serg.Model;
 
 
-
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name="orders")
-@NoArgsConstructor
+
 public class Order implements Serializable {
 
 
@@ -48,6 +45,9 @@ public class Order implements Serializable {
 
     public void setDishes(List<Dish> dishes) {
         this.dishes = dishes;
+    }
+
+    public Order() {
     }
 
     public Order(Tablet tablet, List<Dish> dishes, Boolean cooking) throws IOException

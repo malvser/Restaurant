@@ -1,12 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 
 <html>
 <head>
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Новая реклама</title>
+    <title>
+        Новая реклама</title>
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
 
 </head>
@@ -52,9 +51,9 @@
         </c:if>
 
         <c:if test="${photo ne null}">
-            <label for="photo" class="sr-only">photo</label>
-            <input  type="file" id="photo" name="photo" value="${photo}" required>
-        </c:if>
+        <label for="photo" class="sr-only">photo</label>
+        <input  type="file" id="photo" name="photo" value="${photo}" required>
+    </c:if>
         <c:if test="${photo eq null}">
             <label for="photo" class="sr-only">photo</label>
             <input  type="file" id="photo" name="photo" required>

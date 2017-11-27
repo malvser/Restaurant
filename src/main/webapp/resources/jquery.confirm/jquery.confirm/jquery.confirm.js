@@ -12,7 +12,7 @@
 			
 			// Generating the markup for the buttons:
 			
-			buttonHTML += '<a href="/order" class="button '+obj['class']+'">'+name+'<span></span></a>';
+			buttonHTML += '<a href="" class="button '+obj['class']+'">'+name+'<span></span></a>';
 			
 			if(!obj.action){
 				obj.action = function(){};

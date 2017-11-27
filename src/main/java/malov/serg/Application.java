@@ -23,10 +23,8 @@ public class Application {
         return new CommandLineRunner() {
             @Override
             public void run(String... strings) throws Exception {
-               /* userService.addUser(new CustomUser("admin", "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", UserRole.ADMIN));
-                userService.addUser(new CustomUser("user", "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", UserRole.USER));
-                userService.addUser(new CustomUser("cook", "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", UserRole.COOK));*/
-            }
+               /* userService.addUser(new CustomUser("admin", "$2a$10$iCxmJ6AX2rlo34XqXVu6LenOpWR2wXdE8xQ9vq.eU63dWJHveyaBu", UserRole.ADMIN));
+                */}
         };
     }
 

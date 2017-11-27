@@ -16,7 +16,7 @@ $(document).ready(function () {
 
                 $.confirm({
                     'title': 'Подтверждение снятие бонусов',
-                    'message': 'Для выбора заказа необходимо отметить его галочкой. Вы хотели бы воспользоваться своими бонусами для скидки на блюда? , ',
+                    'message': 'Для выбора заказа необходимо отметить его галочкой. Вы хотели бы воспользоваться своими бонусами для скидки на блюда?',
                     'buttons': {
                         'Да': {
                             'class': 'blue',
@@ -53,7 +53,7 @@ $(document).ready(function () {
                                     }
 
                                     console.log("date = " + date);
-                                    submit('/made/order_bonus', date);
+                                    submit('/made_order_bonus', date);
 
 
                                 }
@@ -94,7 +94,7 @@ $(document).ready(function () {
                                     }
 
                                     console.log("date = " + date);
-                                    submit('/made/order', date);
+                                    submit('/made_order', date);
 
 
                                 }
@@ -148,7 +148,7 @@ $(document).ready(function () {
                                     }
 
                                     console.log("date = " + date);
-                                    submit('/made/order', date);
+                                    submit('/made_order', date);
 
 
                                 }
@@ -205,7 +205,7 @@ $(document).ready(function () {
                                 }
 
                                 console.log("date = " + date);
-                                submit('/made/order', date);
+                                submit('/made_order', date);
 
 
                             }
