@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html>
 <head>
 
@@ -12,7 +12,7 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Вход в профиль повара</title>
 
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
@@ -56,13 +56,14 @@
 
             <ul class="nav nav-sidebar">
 
+                <li><a href="/order_for_cooks"><b>Выполнить заказ</b></a></li>
                 <li><a> <b>Количество новых заказов: <c:out value="${count_order}"/> шт.</b></a></li>
                 <li><a> <b>Общее время приготовления новых заказов: <c:out value="${totalCookingTimeNewOrder}"/> мин.</b></a></li>
                 <li><a><b>Количество блюд в новых заказах: <c:out value="${countDishesNewOrder}"/> шт.</b></a></li>
                 <li><a><b>Количество готовящихся сейчас заказов: <c:out value="${count_cooking_order}"/> шт.</b></a></li>
                 <li><a> <b>Общее время приготовления готовящихся заказов: <c:out value="${totalCookingTime}"/> мин.</b></a></li>
                 <li><a><b>Количество блюд готовящихся заказов: <c:out value="${countDishesCookingOrder}"/> шт.</b></a></li>
-                <li><a href="/order_for_cooks"><b>Взять заказ</b></a></li>
+
 
             </ul>
 

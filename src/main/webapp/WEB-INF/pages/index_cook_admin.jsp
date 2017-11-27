@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html>
 <head>
 
@@ -12,7 +12,7 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Состояния заказов</title>
 
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">

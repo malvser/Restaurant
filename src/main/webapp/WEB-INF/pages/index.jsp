@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html>
 <head>
 
@@ -12,7 +12,7 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Вход в профиль</title>
 
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
@@ -39,6 +39,13 @@
 
         </div>
         <div id="navbar" class="navbar-collapse collapse">
+            <form class="navbar-form navbar-left" action="/advertisement_view" method="post">
+                <input hidden name="IdDishes" value="${Id}">
+                <div class="btn-group" role="group">
+                    <input type="submit" class="btn btn-info" value="Загляните сюда!">
+                </div>
+
+            </form>
             <ul class="nav navbar-nav navbar-right">
                 <li> <a>Ваш логин: ${login}</a></li>
                 <li><a href="/logout">Выйти</a></li>
@@ -54,16 +61,11 @@
 
         <form class="form-signin">
 
-            <h1>Hello, world!</h1>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-                jumbotron and three supporting pieces of content. Use it as a starting point to create something more
-                unique.</p>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-                jumbotron and three supporting pieces of content. Use it as a starting point to create something more
-                unique.</p>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-                jumbotron and three supporting pieces of content. Use it as a starting point to create something more
-                unique.</p>
+            <p></p>
+            <p>Пользователь под ролью ADMIN сможет зайти только по ссылке "Админ" (не сможет зайти по этим ссылкам "Клиент", "Повар")</p>
+            <p>Пользователь под ролью USER сможет зайти только по ссылке "Клиент" (не сможет зайти по этим ссылкам "Админ", "Повар")</p>
+            <p>Пользователь под ролью COOK сможет зайти только по ссылке "Повар" (не сможет зайти по этим ссылкам "Клиент", "Админ")<p></p>
+            </p>
             <p><a class="btn btn-primary btn-lg" href="/search_hot_snacks" role="button">Меню</a></p>
         </form>
     </div>

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <html>
 
 <head>
@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="resources/img/logo.png">
 
-    <title>Malov Serg</title>
+    <title>Заказ блюд</title>
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
@@ -43,8 +43,7 @@
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                    Закрыть</em></font></button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -63,7 +62,7 @@
             <a id="add_contact" class="navbar-brand" href="/">Главная</a>
 
             <form class="navbar-form navbar-left" method="post">
-                <button class="btn btn-success" type="button" id="modal" >Сделать заказ</button>
+                <button class="btn btn-success" type="button" id="modal">Сделать заказ</button>
             </form>
 
 
@@ -72,12 +71,12 @@
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/search_hot_snacks">Сброс поиска</a></li>
                 <c:if test="${login ne null}">
-                    <li> <a>Ваш логин: ${login}</a></li>
+                    <li><a>Ваш логин: ${login}</a></li>
                     <li><a href="/logout">Выход</a></li>
                 </c:if>
             </ul>
             <c:if test="${login ne null}">
-            <input type="hidden" name="log" id="log" value="${login}">
+                <input type="hidden" name="log" id="log" value="${login}">
             </c:if>
             <c:if test="${login eq null}">
                 <input type="hidden" name="log" id="log" value="empty">
@@ -93,7 +92,7 @@
 
             <form class="navbar-form navbar-right" role="search" action="/search_dish" method="post">
                 <div class="form-group">
-                    <input type="text" class="form-control" name="pattern_search" placeholder="Поиск">
+                    <input type="text" class="form-control" name="pattern" placeholder="Поиск">
                 </div>
                 <button type="submit" class="btn btn-primary">Поиск</button>
 
@@ -107,47 +106,52 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-            <input hidden name="pattern" value="${pattern}">
-                <ul class="nav nav-sidebar">
-                    <li <c:if test="${pattern eq 'Все блюда'}">
-                        class="active"
-                    </c:if>><a href="/search_all"><b>Все блюда</b></a></li>
+            <input type="hidden" id="pattern" name="pattern" value="${pattern}">
+            <ul class="nav nav-sidebar">
+                <li <c:if test="${pattern eq 'Все блюда'}">
+                    class="active"
+                </c:if>><a href="/search_all"><b>Все блюда</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Горячии закуски'}">
-                        class="active"
-                    </c:if>><a href="/search_hot_snacks"><b>Горячии закуски</b></a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li <c:if test="${pattern eq 'Супы'}">
+                    class="active"
+                </c:if>><a href="/search_soups"><b>Супы</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Холодные закуски'}">
-                        class="active"
-                    </c:if>><a href="/search_cold_snacks"><b>Холодные закуски</b> </a></li>
+                <li <c:if test="${pattern eq 'Мясные и рыбные блюда'}">
+                    class="active"
+                </c:if>><a href="/search_meat_dishes"><b>Мясные и рыбные блюда</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Салаты'}">
-                        class="active"
-                    </c:if>><a href="/search_salads"><b>Салаты</b></a></li>
+                <li <c:if test="${pattern eq 'Горячие закуски'}">
+                    class="active"
+                </c:if>><a href="/search_hot_snacks"><b>Горячие закуски</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Первые блюда'}">
-                        class="active"
-                    </c:if>><a href="/search_first_meal"><b>Первые блюда</b></a></li>
-                </ul>
-                <ul class="nav nav-sidebar">
-                    <li <c:if test="${pattern eq 'Алкогольные напитки'}">
-                        class="active"
-                    </c:if>><a href="/search_alcoholic_beverages"><b>Алкогольные напитки</b></a></li>
+                <li <c:if test="${pattern eq 'Холодные закуски'}">
+                    class="active"
+                </c:if>><a href="/search_cold_snacks"><b>Холодные закуски</b> </a></li>
 
-                    <li <c:if test="${pattern eq 'Гарниры'}">
-                        class="active"
-                    </c:if>><a href="/search_garnishes"><b>Гарниры</b></a></li>
+                <li <c:if test="${pattern eq 'Салаты'}">
+                    class="active"
+                </c:if>><a href="/search_salads"><b>Салаты</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Напитки'}">
-                        class="active"
-                    </c:if>><a href="/search_beverages"><b>Напитки</b></a></li>
+                <li <c:if test="${pattern eq 'Гарниры'}">
+                    class="active"
+                </c:if>><a href="/search_garnishes"><b>Гарниры</b></a></li>
 
-                    <li <c:if test="${pattern eq 'Супы'}">
-                        class="active"
-                    </c:if>><a href="/search_supe"><b>Супы</b></a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li <c:if test="${pattern eq 'Алкогольные напитки'}">
+                    class="active"
+                </c:if>><a href="/search_alcoholic_beverages"><b>Алкогольные напитки</b></a></li>
 
-                </ul>
 
+                <li <c:if test="${pattern eq 'Напитки'}">
+                    class="active"
+                </c:if>><a href="/search_beverages"><b>Напитки</b></a></li>
+
+
+
+            </ul>
 
 
         </div>
@@ -158,7 +162,7 @@
                 <font size="7" color="#6a5acd" face="Monotype Corsiva"><em>
                     Выберите желаемое блюдо, отметьте его и закажите </em></font>
             </p>
-            <form action="/order"  method="post"> <!-- action="/order" -->
+            <form>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -175,10 +179,10 @@
                                 Стоимость</em></font>
                             </th>
                             <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                Скидка</em></font>
+                                Скидка по бонусам, %</em></font>
                             </th>
                             <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                                К-во бонусов</em></font>
+                                Необх. бонусов</em></font>
                             </th>
                             <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                                 Фото</em></font>
@@ -189,7 +193,8 @@
                         <form class="form-control" enctype="multipart/form-data" action="/order" method="post">
                             <c:forEach var="item" items="${dishes}">
                                 <tr>
-                                    <td><input type="checkbox" align="center" id="checkbox_${item.id}" name="toOrder[]" value="${item.id}"/>
+                                    <td><input type="checkbox" align="center" id="checkbox_${item.id}" name="toOrder[]"
+                                               value="${item.id}"/>
                                     </td>
 
                                     <td><c:out value="${item.name}"/>
@@ -213,8 +218,15 @@
                 </div>
             </form>
 
-
-
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <c:if test="${allPages ne null}">
+                        <c:forEach var="i" begin="1" end="${allPages}">
+                            <li><a href="/search_all?page=<c:out value="${i - 1}"/>"><c:out value="${i}"/></a></li>
+                        </c:forEach>
+                    </c:if>
+                </ul>
+            </nav>
 
 
         </div>

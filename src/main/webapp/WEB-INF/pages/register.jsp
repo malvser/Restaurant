@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -34,6 +34,7 @@
         <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email" required>
         <label for="inputPhone" class="sr-only">phone</label>
         <input type="text" id="inputPhone" name="phone" class="form-control" placeholder="Phone" required>
+        <label for="inputFull_name" class="sr-only">full_name</label>
         <input type="text" id="inputFull_name" name="full_name" class="form-control" placeholder="ФИО">
 
 

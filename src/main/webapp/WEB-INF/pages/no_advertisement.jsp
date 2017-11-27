@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Отсутствие рекламы</title>
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <link href="resources/css/cover.css" rel="stylesheet">

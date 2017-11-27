@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 
 <head>
@@ -11,10 +10,10 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Ожидание заказа</title>
 
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
 
 
 </head>
@@ -37,14 +36,16 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 
-
-                <li><a href="/logout">Выход</a></li>
+                <c:if test="${login ne null}">
+                    <li> <a>Ваш логин: ${login}</a></li>
+                    <li><a href="/logout">Выход</a></li>
+                </c:if>
 
             </ul>
-            <form class="navbar-form navbar-left" action="/advertisement/view" method="post">
+            <form class="navbar-form navbar-left" action="/advertisement_view" method="post">
                 <input hidden name="IdDishes" value="${Id}">
                 <div class="btn-group" role="group">
-                    <input type="submit" class="btn btn-info" value="Просмотреть рекламу">
+                    <input type="submit" class="btn btn-info" value="Загляните сюда!!!">
                 </div>
 
             </form>
@@ -79,17 +80,14 @@
                     <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                         Блюдо</em></font>
                     </th>
-                    <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                         Вес</em></font>
                     </th>
                     <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                         Стоимость</em></font>
                     </th>
-                    <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                        Скидка</em></font>
-                    </th>
-                    <th width="15%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
-                        Время готовки</em></font>
+                    <th width="30%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                        Время готовки (мин.)</em></font>
                     </th>
                     <th width="20%"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
                         Фото</em></font>
@@ -105,7 +103,6 @@
                             <td><c:out value="${item.name}"/>
                             <td><c:out value="${item.weight}"/>
                             <td><c:out value="${item.cost}"/>
-                            <td><c:out value="${item.discount}"/>
                             <td><c:out value="${item.duration}"/>
                             <td>
                                 <div id="aaa"
@@ -126,11 +123,6 @@
 
 
 </div>
-
-
-
-<script src="resources/js/bootstrap.min.js"></script>
-
 
 
 

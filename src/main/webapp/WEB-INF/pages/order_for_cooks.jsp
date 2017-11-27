@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html>
 
 <head>
@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="resources/img/logo.png">
 
-    <title>Malov Serg</title>
+    <title>Приготовление заказа</title>
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
@@ -35,13 +35,15 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">×</span></button>
-                <div class="modal-lg">Photo</div>
+                <div class="modal-lg"><font size="6" color="#d2691e" face="Monotype Corsiva"><em>
+                    Фото</em></font>
+                </div>
             </div>
             <div class="modal-body">
                 <img class="img-responsive center-block" src="" alt="">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -62,7 +64,7 @@
 
             <form class="navbar-form navbar-left">
 
-                <button class="btn btn-success" type="button"  id="new_order">Заказ готов / Получить новый заказ</button>
+                <button class="btn btn-success" type="button"  id="new_order">Заказ приготовлен / Получить новый заказ</button>
             </form>
 
 
@@ -70,7 +72,7 @@
         <div id="navbar" class="navbar-collapse collapse">
 
             <form class="navbar-form navbar-right">
-                <button class="btn btn-danger" type="button" id="home">Заказ готов / Выйти</button>
+                <button class="btn btn-danger" type="button" id="home">Заказ приготовлен / Выйти</button>
 
             </form>
 
