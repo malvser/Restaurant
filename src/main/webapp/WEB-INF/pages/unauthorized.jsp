@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+
 <html>
 <head>
 
@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Malov Serg</title>
+    <title>Доступ запрещен</title>
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <link href="resources/css/cover.css" rel="stylesheet">
@@ -46,7 +46,7 @@
             <div class="mastfoot">
                 <div class="inner">
                     <p>С уважением,</p>
-                    <p>администрация ресторана <a href="/name">"Название ресторана"</a>
+                    <p>администрация ресторана "Название ресторана"</p>
                 </div>
             </div>
 

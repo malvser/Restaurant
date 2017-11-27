@@ -1,15 +1,12 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="en">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
     <link rel="shortcut icon" href="resources/img/logo.png">
-    <title>Регистрация</title>
+    <title>Регистрация для admin</title>
 
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <link href="resources/css/signin.css" rel="stylesheet">
@@ -40,7 +37,7 @@
 
         <c:if test="${role ne null}">
             <select class="selectpicker form-control form-group" name="role">
-                <option value="-1">${role}</option>
+                <option value="${role}">${role}</option>
                 <c:forEach items="${userRole}" var="role">
                     <jsp:useBean id="role" scope="page" type="malov.serg.Model.UserRole" />
                     <option value="${role.name().toString()}">${role.name().toString()}</option>

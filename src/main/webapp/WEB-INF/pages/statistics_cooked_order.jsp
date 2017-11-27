@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <html>
 
 <head>
@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="resources/img/logo.png">
 
-    <title>Malov Serg</title>
+    <title>Статистика по приготовленным заказам</title>
 
     <!-- подтверждающее окно -->
     <link href='https://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css'>
@@ -97,9 +97,9 @@
             <ul class="nav nav-sidebar">
 
                 <li><a href="/enter_cook_admin"> <b>Просмотр состояния заказов</b></a></li>
-                <li class="active"><a href="/statistic_cooked_order"> <b>Приготовленные заказы</b></a></li>
-                <li><a href="/statistic_viewed_advertisement"><b>Показанная реклама</b></a></li>
-                <li><a href="/statistic_no_advertisement"><b>Отсутствувала реклама</b></a></li>
+                <li class="active"><a href="/statistic_cooked_order"> <b>Статистика приготовленных заказов</b></a></li>
+                <li><a href="/statistic_viewed_advertisement"><b>Статистика по просмотренной рекламе</b></a></li>
+                <li><a href="/statistic_no_advertisement"><b>Статистика по отсутствию рекламы</b></a></li>
                 <li><a href="/advertisement_add_page"><b>Добавить рекламу</b></a></li>
                 <li><a href="/advertisementList"><b>Список рекламы</b></a></li>
                 <li><a href="/add_tablet"><b>Добавить стол</b></a></li>
