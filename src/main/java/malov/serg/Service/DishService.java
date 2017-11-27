@@ -55,6 +55,10 @@ public class DishService {
         return dishRepository.findAll(pageable).getContent();
     }
 
+    @Transactional(readOnly = true)
+    public Dish findOne(long id) {
+        return dishRepository.findOne(id);
+    }
 
     @Transactional(readOnly = true)
     public long count() {
@@ -67,8 +71,18 @@ public class DishService {
     }
 
     @Transactional(readOnly = true)
+    public List<Dish> findByPattern(String pattern) {
+        return dishRepository.findByPattern(pattern, null);
+    }
+
+    @Transactional(readOnly = true)
     public List<Dish> findByType(String pattern) {
         return dishRepository.findByType(pattern);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Dish> findByDiscount() {
+        return dishRepository.findByDiscount();
     }
 
 }
