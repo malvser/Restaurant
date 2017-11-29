@@ -61,6 +61,7 @@
 
             </form>
 
+
             <form action="/register" class="navbar-form navbar-right">
                 <button type="submit" class="btn btn-success">Регистрация</button>
             </form>
