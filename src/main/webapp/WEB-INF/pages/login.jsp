@@ -77,11 +77,13 @@
 
             <p ><img  alt="УПССС... ) здесь должна быть картинка" src="resources/img/logo.png" align="left"
                       vspace="15" hspace="15"></p>
-            <p> <b> admin login: admin / password</b> </p>
 
-            <p> <b> user login: user / password2</b></p>
 
-            <p> <b> cook login: cook / password3</b> </p>
+            <p> <b> логин / пароль администратора: admin / password</b> </p>
+
+            <p> <b> логин / пароль пользователя: user / password2</b></p>
+
+            <p> <b> логин / пароль повара: cook / password3</b> </p>
 
             <p>  <b>  Стек технологий: </b> Spring Security, Spring Boot, Spring MVC,
                 Spring Data JPA, Hibernate ORM, JSP, JSTL, MySQL, JavaScript, jQuery, Bootstrap. </p>
