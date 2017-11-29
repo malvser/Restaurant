@@ -260,7 +260,7 @@ public class DishController {
         getAuthentication(model);
 
 
-        String pattern = "Алкогольные напитки";
+        String pattern = "Алкоголь";
         model.addAttribute("dishes", dishService.findByType(pattern));
         model.addAttribute("pattern", pattern);
         return "main";

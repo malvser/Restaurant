@@ -74,7 +74,7 @@
                 <option value="Салаты">Салаты</option>
                 <option value="Супы">Супы</option>
                 <option value="Напитки">Напитки</option>
-                <option value="Алкогольные напитки">Алкогольные напитки</option>
+                <option value="Алкогольные напитки">Алкоголь</option>
                 <option value="Мясные и рыбные блюда">Мясные и рыбные блюда</option>
             </select>
         </c:if>
@@ -86,7 +86,7 @@
                 <option value="Салаты">Салаты</option>
                 <option value="Супы">Супы</option>
                 <option value="Напитки">Напитки</option>
-                <option value="Алкогольные напитки">Алкогольные напитки</option>
+                <option value="Алкогольные напитки">Алкоголь</option>
                 <option value="Мясные и рыбные блюда">Мясные и рыбные блюда</option>
             </select>
         </c:if>

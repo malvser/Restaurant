@@ -140,9 +140,9 @@
 
             </ul>
             <ul class="nav nav-sidebar">
-                <li <c:if test="${pattern eq 'Алкогольные напитки'}">
+                <li <c:if test="${pattern eq 'Алкоголь'}">
                     class="active"
-                </c:if>><a href="/search_alcoholic_beverages"><b>Алкогольные напитки</b></a></li>
+                </c:if>><a href="/search_alcoholic_beverages"><b>Алкоголь</b></a></li>
 
 
                 <li <c:if test="${pattern eq 'Напитки'}">
