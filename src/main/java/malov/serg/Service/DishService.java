@@ -7,7 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +86,39 @@ public class DishService {
     @Transactional(readOnly = true)
     public List<Dish> findByDiscount() {
         return dishRepository.findByDiscount();
+    }
+
+    @Transactional
+    public void dish_id(Long dish_id, HttpServletResponse response, String name, MultipartFile body_photo, int cost, int weight, int discount, int bonus, int duration, String type){
+
+        if(dish_id != null){
+            Dish dish = findOne(dish_id);
+            dish.setBonus(bonus);
+            dish.setType(type);
+            dish.setDiscount(discount);
+            dish.setName(name);
+            dish.setCost(cost);
+            dish.setDuration(duration);
+            dish.setWeight(weight);
+            try {
+                dish.setPhoto(body_photo.getBytes());
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
+            addDish(dish);
+
+        }else {
+
+            try {
+                Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type, bonus);
+                addDish(dish);
+            } catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
+
+        }
     }
 
 }

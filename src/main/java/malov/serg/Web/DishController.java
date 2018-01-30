@@ -104,34 +104,7 @@ public class DishController {
                           @RequestParam String type,
                           @RequestParam(required = false) Long dish_id) {
 
-        if(dish_id != null){
-            Dish dish = dishService.findOne(dish_id);
-            dish.setBonus(bonus);
-            dish.setType(type);
-            dish.setDiscount(discount);
-            dish.setName(name);
-            dish.setCost(cost);
-            dish.setDuration(duration);
-            dish.setWeight(weight);
-            try {
-                dish.setPhoto(body_photo.getBytes());
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                e.printStackTrace();
-            }
-            dishService.addDish(dish);
-
-        }else {
-
-            try {
-                Dish dish = new Dish(body_photo.getBytes(), name, cost, weight, discount, duration, type, bonus);
-                dishService.addDish(dish);
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                e.printStackTrace();
-            }
-
-        }
+        dishService.dish_id(dish_id, response, name, body_photo, cost, weight, discount, bonus, duration, type);
         return "redirect:/dishesList";
     }
 
