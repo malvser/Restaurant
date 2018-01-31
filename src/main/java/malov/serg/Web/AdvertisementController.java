@@ -36,17 +36,14 @@ public class AdvertisementController {
 
     static final int ITEMS_PER_PAGE_ADVERTISEMENT = 6;
 
-    @Autowired
-    private DishService dishService;
 
-    @Autowired
-    private NoAdvertisementService noAdvertisementService;
+
+
 
     @Autowired
     private AdvertisementPhotoService advertisementPhotoService;
 
-    @Autowired
-    private ViewedAdvertisementService viewedAdvertisementService;
+
 
 
     @RequestMapping("/advertisementList")
@@ -85,45 +82,10 @@ public class AdvertisementController {
     @RequestMapping(value = "/advertisement_view", method = RequestMethod.POST)
     public String onView(Model model, @RequestParam(required = false, value = "IdDishes") String idDishes) {
 
-        List<AdvertisementPhoto> advertisementPhotos;
-        if((advertisementPhotos = getAdvertisementPhotos()).size() > 0)
-
-         {
-
-            int random = (ThreadLocalRandom.current().nextInt(advertisementPhotos.size()));
-            long id = advertisementPhotos.get(random).getId();
-
-            AdvertisementPhoto adv = advertisementPhotos.get(random);
-            Long amount = adv.getAmount();
-            adv.setAmount(amount - 1);
-            advertisementPhotoService.addAdvertisement(adv);
-
-            addViewedAdvertisement(id);
-
-            model.addAttribute("photo_id", id);
-        } else  {
-            if (!idDishes.equals("")) {
-
-                String[] array = idDishes.split(" ");
-                long[] arrayId = new long[array.length];
-                for (int i = 0; i < array.length; i++) {
-                    arrayId[i] = Long.parseLong(array[i]);
-                }
+        List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
 
 
-                List<Dish> dishes = dishService.findArrayId(arrayId);
-                long sumDuration = 0;
-                for (Dish dish : dishes) {
-                    sumDuration += dish.getDuration();
-                }
-                NoAdvertisement noAdvertisement = new NoAdvertisement(sumDuration);
-                noAdvertisementService.addNoAdvertisement(noAdvertisement);
-            }
-            return "redirect:/no_advertisement";
-
-        }
-
-        return "advertisement_view";
+        return advertisementPhotoService.onView(advertisementPhotos, model, idDishes);
     }
 
 
@@ -132,32 +94,8 @@ public class AdvertisementController {
 
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
 
-
-        long idNext = 0;
-        int y;
-        for (int i = 0; i < advertisementPhotos.size(); i++) {
-
-            if (advertisementPhotos.get(i).getId() == id) {
-                if ((y = i + 1) < advertisementPhotos.size()) {
-                    idNext = advertisementPhotos.get(y).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(y);
-                    Long amount = adv.getAmount();
-                    adv.setAmount(amount - 1);
-                    advertisementPhotoService.addAdvertisement(adv);
-                    break;
-                } else {
-                    idNext = advertisementPhotos.get(0).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(0);
-                    Long amount = adv.getAmount();
-                    adv.setAmount(amount - 1);
-                    advertisementPhotoService.addAdvertisement(adv);
-                    break;
-
-                }
-            }
-        }
-
-        addViewedAdvertisement(idNext);
+        long idNext = advertisementPhotoService.onViewNext(advertisementPhotos, id);
+       advertisementPhotoService.addViewedAdvertisement(idNext);
 
         model.addAttribute("photo_id", idNext);
 
@@ -198,7 +136,7 @@ public class AdvertisementController {
             }
         }
 
-        addViewedAdvertisement(idBack);
+        advertisementPhotoService.addViewedAdvertisement(idBack);
 
         model.addAttribute("photo_id", idBack);
 
@@ -243,31 +181,9 @@ public class AdvertisementController {
                           @RequestParam long total_amount,
                           @RequestParam(required = false) Long advertisement_id) {
 
+        advertisementPhotoService.advertisement_id(advertisement_id, response, name, body_photo,
+                cost, amount, total_amount);
 
-        if(advertisement_id != null){
-            AdvertisementPhoto advertisementPhoto = advertisementPhotoService.findOne(advertisement_id);
-            advertisementPhoto.setAmount(amount);
-            advertisementPhoto.setTotal_amount(total_amount);
-            advertisementPhoto.setName(name);
-            advertisementPhoto.setCost(cost);
-            try {
-                advertisementPhoto.setPhoto(body_photo.getBytes());
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                e.printStackTrace();
-            }
-            advertisementPhotoService.addAdvertisement(advertisementPhoto);
-        }else {
-
-            try {
-                AdvertisementPhoto advertisementPhoto = new AdvertisementPhoto(body_photo.getBytes(), name,
-                        cost, amount, total_amount);
-                advertisementPhotoService.addAdvertisement(advertisementPhoto);
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                e.printStackTrace();
-            }
-        }
 
         return "redirect:/advertisementList";
     }
@@ -313,11 +229,7 @@ public class AdvertisementController {
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
-    private void addViewedAdvertisement(long id) {
-        ViewedAdvertisement viewedAdvertisement = new ViewedAdvertisement(advertisementPhotoService.findOne(id),
-                advertisementPhotoService.findOne(id).getCost());
-        viewedAdvertisementService.addViewedAdvertisement(viewedAdvertisement);
-    }
+
 
     private List<AdvertisementPhoto> getAdvertisementPhotos() {
         List<AdvertisementPhoto> advertisementPhotos = advertisementPhotoService.findAll();
