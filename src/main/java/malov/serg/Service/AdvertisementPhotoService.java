@@ -208,6 +208,38 @@ public class AdvertisementPhotoService {
     }
 
     @Transactional
+    public long onViewBack(List<AdvertisementPhoto> advertisementPhotos, long id){
+
+        long idBack = 0;
+        int y;
+        for (int i = 0; i < advertisementPhotos.size(); i++) {
+
+            if (advertisementPhotos.get(i).getId() == id) {
+                if (i > 0) {
+                    y = i - 1;
+                    idBack = advertisementPhotos.get(y).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(y);
+                    Long amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
+                    addAdvertisement(adv);
+                    return idBack;
+
+                } else {
+                    idBack = advertisementPhotos.get(advertisementPhotos.size() - 1).getId();
+                    AdvertisementPhoto adv = advertisementPhotos.get(advertisementPhotos.size() - 1);
+                    Long amount = adv.getAmount();
+                    adv.setAmount(amount - 1);
+                    addAdvertisement(adv);
+                    return idBack;
+
+                }
+            }
+        }
+        return  idBack;
+
+    }
+
+    @Transactional
     public void PhotoAdvertisementNotFoundException(byte[] bytes) {
 
         if (bytes == null) {

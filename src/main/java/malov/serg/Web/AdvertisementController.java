@@ -37,12 +37,8 @@ public class AdvertisementController {
     static final int ITEMS_PER_PAGE_ADVERTISEMENT = 6;
 
 
-
-
-
     @Autowired
     private AdvertisementPhotoService advertisementPhotoService;
-
 
 
 
@@ -110,31 +106,8 @@ public class AdvertisementController {
         List<AdvertisementPhoto> advertisementPhotos = getAdvertisementPhotos();
 
 
-        long idBack = 0;
-        int y;
-        for (int i = 0; i < advertisementPhotos.size(); i++) {
+        long idBack = advertisementPhotoService.onViewBack(advertisementPhotos, id);
 
-            if (advertisementPhotos.get(i).getId() == id) {
-                if (i > 0) {
-                    y = i - 1;
-                    idBack = advertisementPhotos.get(y).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(y);
-                    Long amount = adv.getAmount();
-                    adv.setAmount(amount - 1);
-                    advertisementPhotoService.addAdvertisement(adv);
-                    break;
-
-                } else {
-                    idBack = advertisementPhotos.get(advertisementPhotos.size() - 1).getId();
-                    AdvertisementPhoto adv = advertisementPhotos.get(advertisementPhotos.size() - 1);
-                    Long amount = adv.getAmount();
-                    adv.setAmount(amount - 1);
-                    advertisementPhotoService.addAdvertisement(adv);
-                    break;
-
-                }
-            }
-        }
 
         advertisementPhotoService.addViewedAdvertisement(idBack);
 
