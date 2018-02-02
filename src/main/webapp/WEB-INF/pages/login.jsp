@@ -87,9 +87,17 @@
             <p> <b> логин / пароль повара: cook / password3</b> </p>
 
             <p>  <b>  Стек технологий: </b> Spring Security, Spring Boot, Spring MVC,
-                Spring Data JPA, Hibernate ORM, JSP, JSTL, MySQL, JavaScript, jQuery, Bootstrap. </p>
+                Spring Data JPA, Maven, Git, Hibernate ORM, JSP, JSTL, MySQL, JavaScript, jQuery, Bootstrap. </p>
             <p><a class="btn btn-primary btn-lg" href="/search_hot_snacks" role="button">Меню</a></p>
 
+            <p>&nbsp;&nbsp;&nbsp;  Автоматизация для работы в ресторане.
+                С любого столика через планшет можно осуществить заказ. Этот заказ сразу увидит первый освободившийся повар.
+                Каждый повар готовит под своей учетной записью. Пока заказ готовится, клиент может просматривать рекламу.
+                В конце рабочего дня директор(админ) может увидеть статистику:
+                 <p>а) по загрузке повара</p>
+                 <p> б) по приготовленным заказам</p>
+                 <p>в) по просмотренной рекламе</p>
+                 <p> г) по отсутствию рекламы</p>
             <p>&nbsp;&nbsp;&nbsp;     Java Enterprise проект с регистрацией/авторизацией и интерфейсом на основе ролей (ADMIN, USER, COOK).</p>
             <p><b>Администратор может:</b></p>
             <p> - создавать/редактировать/удалять пользователей (ADMIN, USER, COOK), блюда, столы, рекламу,</p>
