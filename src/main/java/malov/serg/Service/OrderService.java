@@ -55,6 +55,23 @@ public class OrderService {
         }
     }
 
+    @Transactional
+    public Order orderForCook(List<Order> orderList){
+
+        Order order = null;
+        if (orderList.size() > 0) {
+            for (int i = 0; i < orderList.size(); i++) {
+                if (!orderList.get(i).getCooking()) {
+                    order = orderList.get(i);
+                    order.setCooking(true);
+                    addOrder(order);
+                    break;
+                }
+            }
+        }
+        return order;
+    }
+
     @Transactional(readOnly = true)
     public long count() {
         return orderRepository.count();

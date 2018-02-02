@@ -169,17 +169,8 @@ public class MyController {
     public String orderForCooks(Model model) {
 
         List<Order> orderList = orderService.findAll();
-        Order order = null;
-        if (orderList.size() > 0) {
-            for (int i = 0; i < orderList.size(); i++) {
-                if (!orderList.get(i).getCooking()) {
-                    order = orderList.get(i);
-                    order.setCooking(true);
-                    orderService.addOrder(order);
-                    break;
-                }
-            }
-        }
+        Order order = orderService.orderForCook(orderList);
+
         if (order != null) {
             String order_id = "" + order.getId();
             model.addAttribute("dishesList", order.getDishes());
