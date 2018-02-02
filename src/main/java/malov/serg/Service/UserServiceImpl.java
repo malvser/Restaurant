@@ -1,6 +1,7 @@
 package malov.serg.Service;
 
 import malov.serg.Model.CustomUser;
+import malov.serg.Model.UserRole;
 import malov.serg.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +54,65 @@ public class UserServiceImpl implements UserService {
     public List<CustomUser> findAll(Pageable pageable) {
         return userRepository.findAll(pageable).getContent();
     }
+
+    @Override
+    @Transactional
+    public void newAnyUser(String passHash, String login, String role, String email, String phone, String full_name,
+                        Long user_id,
+                        Integer bonus){
+
+        if(user_id != null){
+            System.out.println("role = " + "ROLE_" + role);
+            System.out.println("UserRole.ADMIN.toString() = " + UserRole.ADMIN.toString());
+            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
+                CustomUser user = findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.ADMIN);
+                addUser(user);
+            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
+                CustomUser user = findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.COOK);
+                addUser(user);
+            } else {
+                CustomUser user = findOne(user_id);
+                user.setBonus(bonus);
+                user.setEmail(email);
+                user.setFull_name(full_name);
+                user.setLogin(login);
+                user.setPassword(passHash);
+                user.setPhone(phone);
+                user.setRole(UserRole.USER);
+                addUser(user);
+
+            }
+
+        }else{
+
+            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
+                CustomUser user = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0, full_name);
+                addUser(user);
+            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
+                CustomUser user = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0, full_name);
+                addUser(user);
+            } else {
+                CustomUser user = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
+                addUser(user);
+            }
+
+        }
+    }
+
 
     @Override
     public List<CustomUser> findFullName(String full_name) {

@@ -185,56 +185,7 @@ public class LoginController {
         /*ShaPasswordEncoder encoder = new ShaPasswordEncoder();
         String passHash = encoder.encodePassword(password, null);*/
 
-        if(user_id != null){
-            System.out.println("role = " + "ROLE_" + role);
-            System.out.println("UserRole.ADMIN.toString() = " + UserRole.ADMIN.toString());
-            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
-                CustomUser user = userService.findOne(user_id);
-                user.setBonus(bonus);
-                user.setEmail(email);
-                user.setFull_name(full_name);
-                user.setLogin(login);
-                user.setPassword(passHash);
-                user.setPhone(phone);
-                user.setRole(UserRole.ADMIN);
-                userService.addUser(user);
-            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
-                CustomUser user = userService.findOne(user_id);
-                user.setBonus(bonus);
-                user.setEmail(email);
-                user.setFull_name(full_name);
-                user.setLogin(login);
-                user.setPassword(passHash);
-                user.setPhone(phone);
-                user.setRole(UserRole.COOK);
-                userService.addUser(user);
-            } else {
-                CustomUser user = userService.findOne(user_id);
-                user.setBonus(bonus);
-                user.setEmail(email);
-                user.setFull_name(full_name);
-                user.setLogin(login);
-                user.setPassword(passHash);
-                user.setPhone(phone);
-                user.setRole(UserRole.USER);
-                userService.addUser(user);
-
-            }
-
-        }else{
-
-            if (("ROLE_" + role).equals(UserRole.ADMIN.toString())) {
-                CustomUser user = new CustomUser(login, passHash, UserRole.ADMIN, email, phone, 0, full_name);
-                userService.addUser(user);
-            } else if (("ROLE_" + role).equals(UserRole.COOK.toString())) {
-                CustomUser user = new CustomUser(login, passHash, UserRole.COOK, email, phone, 0, full_name);
-                userService.addUser(user);
-            } else {
-                CustomUser user = new CustomUser(login, passHash, UserRole.USER, email, phone, 0, full_name);
-                userService.addUser(user);
-            }
-
-        }
+        userService.newAnyUser(passHash, login, role, email, phone, full_name, user_id, bonus);
 
 
         return "redirect:/userlist";

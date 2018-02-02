@@ -15,4 +15,7 @@ public interface UserService {
     List<CustomUser> findFullName(String full_name);
     void deleteDishes(long[] idList);
     long count();
+    void newAnyUser(String passHash, String login, String role, String email, String phone, String full_name,
+                           Long user_id,
+                           Integer bonus);
 }
